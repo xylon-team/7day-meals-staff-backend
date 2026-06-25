@@ -31,6 +31,62 @@
 $ npm install
 ```
 
+## Folder structure
+
+Below is a recommended and commonly used NestJS project layout with explanations for each folder and key file. This project follows the default Nest starter layout with additions to support testing, configuration and build artifacts.
+
+```
+./
+├─ node_modules/           # installed packages
+├─ src/                   # application source (TypeScript)
+│  ├─ main.ts             # application entry (bootstraps Nest app)
+│  ├─ app.module.ts       # root application module (imports modules/providers)
+│  ├─ app.controller.ts   # example controller (route handlers)
+│  ├─ app.service.ts      # example service (business logic)
+│  ├─ modules/            # feature modules (group related controllers/services)
+│  │  └─ users/           # example feature module
+│  │     ├─ users.module.ts
+│  │     ├─ users.controller.ts
+│  │     ├─ users.service.ts
+│  │     ├─ dto/          # Data Transfer Objects (validation shapes)
+│  │     └─ entities/     # persistence/entities/models
+│  ├─ common/             # shared utilities, pipes, guards, interceptors, filters
+│  ├─ config/             # configuration (env loaders, config modules)
+│  ├─ database/           # database setup (ORM config, migrations, seeds)
+│  └─ interfaces/         # shared TypeScript interfaces and types
+├─ test/                  # e2e and integration tests
+│  ├─ app.e2e-spec.ts
+│  └─ jest-e2e.json
+├─ dist/                  # compiled output (after build)
+├─ .env                   # environment variables (not committed)
+├─ package.json           # scripts and dependencies
+├─ tsconfig.json          # TypeScript config for development
+├─ tsconfig.build.json    # TypeScript config for building production bundle
+└─ README.md
+```
+
+Notes on responsibilities and conventions
+
+- `src/main.ts`: bootstraps the Nest application and sets up global pipes, filters, interceptors, and CORS. Keep bootstrapping small — move heavy initialization into modules/providers.
+- `app.module.ts`: root module; assemble and import feature modules, global providers and configuration modules here.
+- Feature modules (`src/modules/...`): encapsulate controllers, providers, DTOs and entities for a bounded context. Use modules to group functionality and enable lazy loading or re-use.
+- `dto/`: use DTO classes with class-validator decorators to enforce incoming request shapes. Register `ValidationPipe` globally in `main.ts` for automatic validation.
+- `common/`: place reusable guards, pipes, interceptors, exception filters, and helper functions here. Export shared providers from an index so feature modules can import them easily.
+- `config/`: keep environment-specific configuration and a `ConfigModule` (e.g., `@nestjs/config`) to centralize access to env variables and typed config.
+- `database/`: keep ORM initialization (TypeORM / Prisma / Sequelize), repository setup, and migrations/seeds here.
+
+Best practices and commands
+
+- Development: `npm run start:dev` (watch mode using `ts-node-dev` or `nest start --watch`)
+- Build for production: `npm run build` -> emits compiled JS to `dist/`
+- Run production build: `npm run start:prod` (executes compiled code from `dist/`)
+- Tests:
+  - Unit: `npm run test`
+  - E2E: `npm run test:e2e`
+  - Coverage: `npm run test:cov`
+
+If you want, I can adapt this section to match your repository's exact modules and files (for example: listing `src/modules/auth`, `src/modules/meals`, or any domain-specific folders). Tell me which areas you'd like expanded.
+
 ## Compile and run the project
 
 ```bash
