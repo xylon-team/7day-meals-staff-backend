@@ -161,7 +161,7 @@ model staff {
   phone_number String  @db.VarChar(15)
   status       String  @db.VarChar(50)
   credential   staff_credential?
-  role_permissions staff_role_permission[]
+  staff_roles staff_role[]
   stock_adjustments stock_adjustment[]
   supplier_requests supplier_request[]
 }
@@ -178,25 +178,34 @@ model role {
   role_id     Int     @id @default(autoincrement())
   role        String  @db.VarChar(100)
   description String  @db.VarChar(500)
-  staff_permissions staff_role_permission[]
+  staff_roles staff_role[]
+  role_permissions role_permission[]
 }
 
 model permission {
   permission_id    Int     @id @default(autoincrement())
   permission_type  String  @db.VarChar(500)
-  staff_permissions staff_role_permission[]
+  role_permissions role_permission[]
 }
 
-model staff_role_permission {
-  staff_id       Int @db.Int
-  role_id        Int @db.Int
-  permission_id  Int @db.Int
+model staff_role {
+  staff_id Int @db.Int
+  role_id  Int @db.Int
 
-  staff       staff       @relation(fields: [staff_id], references: [staff_id])
-  role        role        @relation(fields: [role_id], references: [role_id])
-  permission  permission  @relation(fields: [permission_id], references: [permission_id])
+  staff staff @relation(fields: [staff_id], references: [staff_id])
+  role  role  @relation(fields: [role_id], references: [role_id])
 
-  @@id([staff_id, role_id, permission_id])
+  @@id([staff_id, role_id])
+}
+
+model role_permission {
+  role_id       Int @db.Int
+  permission_id Int @db.Int
+
+  role       role       @relation(fields: [role_id], references: [role_id])
+  permission permission @relation(fields: [permission_id], references: [permission_id])
+
+  @@id([role_id, permission_id])
 }
 
 model supplier {
