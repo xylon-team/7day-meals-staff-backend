@@ -77,14 +77,14 @@ VALUES ('admin', '$2b$10$hashed_password_from_above');
 
 ## Protecting Routes
 
-Use the `JwtAuthGuard` to protect admin routes:
+Use the `AdminJwtAuthGuard` to protect admin routes:
 
 ```typescript
 import { Controller, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AdminJwtAuthGuard } from '../admin-auth/guards/admin-jwt-auth.guard';
 
 @Controller('admin')
-@UseGuards(JwtAuthGuard)
+@UseGuards(AdminJwtAuthGuard)
 export class AdminController {
   @Get('dashboard')
   getDashboard() {
@@ -98,7 +98,7 @@ export class AdminController {
 import { Request } from 'express';
 
 @Get('profile')
-@UseGuards(JwtAuthGuard)
+@UseGuards(AdminJwtAuthGuard)
 getProfile(@Request() req) {
   return req.user;  // { adminId: 1, username: 'admin' }
 }
@@ -134,15 +134,15 @@ getProfile(@Request() req) {
 
 ## Architecture
 
-The auth module consists of:
+The admin-auth module consists of:
 
-- **auth.controller.ts** - Handles login requests
-- **auth.service.ts** - Validates credentials and generates tokens
-- **strategies/jwt.strategy.ts** - Validates JWT tokens
-- **guards/jwt-auth.guard.ts** - Protects routes with custom error handling for expired tokens
-- **dto/login.dto.ts** - Login request validation
-- **dto/login-response.dto.ts** - Login response structure
-- **auth.module.ts** - Module configuration
+- **admin-auth.controller.ts** - Handles login requests
+- **admin-auth.service.ts** - Validates credentials and generates tokens
+- **strategies/admin-jwt.strategy.ts** - Validates JWT tokens
+- **guards/admin-jwt-auth.guard.ts** - Protects routes with custom error handling for expired tokens
+- **dto/admin-login.dto.ts** - Login request validation
+- **dto/admin-login-response.dto.ts** - Login response structure
+- **admin-auth.module.ts** - Module configuration
 
 ## Troubleshooting
 

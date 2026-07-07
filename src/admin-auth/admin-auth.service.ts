@@ -2,17 +2,17 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
-import { LoginDto } from './dto/login.dto';
-import { LoginResponseDto } from './dto/login-response.dto';
+import { AdminLoginDto } from './dto/admin-login.dto';
+import { AdminLoginResponseDto } from './dto/admin-login-response.dto';
 
 @Injectable()
-export class AuthService {
+export class AdminAuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
   ) {}
 
-  async login(loginDto: LoginDto): Promise<LoginResponseDto> {
+  async login(loginDto: AdminLoginDto): Promise<AdminLoginResponseDto> {
     const { admin_username, admin_password } = loginDto;
 
     const admin = await this.prisma.admin.findUnique({
