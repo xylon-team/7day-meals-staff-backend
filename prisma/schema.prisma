@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -18,13 +18,13 @@ datasource db {
 
 model customer {
   customer_id      Int      @id @default(autoincrement())
-  fname            String   @db.VarChar(100)
-  lname            String   @db.VarChar(100)
-  phone_number     String   @db.VarChar(15)
-  latitude         Decimal? @db.Decimal(10, 8)
-  longitude        Decimal? @db.Decimal(11, 8)
-  address_line_1   String?  @db.VarChar(100)
-  address_line_2   String?  @db.VarChar(100)
+  fname            String
+  lname            String
+  phone_number     String
+  latitude         Decimal?
+  longitude        Decimal?
+  address_line_1   String?
+  address_line_2   String?
   is_active        Boolean  @default(true)
   is_deleted       Boolean  @default(false)
   delete_timestamp DateTime?
@@ -39,18 +39,18 @@ model customer_credential {
   customer_credential_id Int      @id @default(autoincrement())
   customer_id            Int      @unique
   customer               customer @relation(fields: [customer_id], references: [customer_id])
-  email                  String   @db.VarChar(100)
-  customer_password      String   @db.VarChar(255)
+  email                  String
+  customer_password      String
 }
 
 model meal_plan {
   meal_id              Int      @id @default(autoincrement())
-  item_name            String   @db.VarChar(100)
-  category             String   @db.VarChar(100)
-  description          String   @db.VarChar(1000)
-  dietary_preference   String   @db.VarChar(100)
-  price                Decimal  @db.Decimal(10, 2)
-  image_path           String?  @db.VarChar(255)
+  item_name            String
+  category             String
+  description          String
+  dietary_preference   String
+  price                Decimal
+  image_path           String?
   is_available         Boolean  @default(true)
   food_items           meal_plan_food_item[]
   orders               customer_order[]
@@ -59,17 +59,17 @@ model meal_plan {
 
 model food_item {
   food_item_id      Int     @id @default(autoincrement())
-  item_name         String  @db.VarChar(100)
-  ingredient_list   String  @db.VarChar(2000)
-  image_path        String? @db.VarChar(255)
+  item_name         String
+  ingredient_list   String
+  image_path        String?
   meal_plans        meal_plan_food_item[]
 }
 
 model meal_plan_food_item {
-  meal_id      Int      @db.Int
-  food_item_id Int      @db.Int
-  day          String   @db.VarChar(50)
-  meal_type    String   @db.VarChar(100)
+  meal_id      Int
+  food_item_id Int
+  day          String
+  meal_type    String
 
   meal_plan    meal_plan   @relation(fields: [meal_id], references: [meal_id])
   food_item    food_item   @relation(fields: [food_item_id], references: [food_item_id])
@@ -79,23 +79,23 @@ model meal_plan_food_item {
 
 model delivery_person {
   delivery_person_id Int     @id @default(autoincrement())
-  rider_name         String  @db.VarChar(100)
-  phone_number       String  @db.VarChar(15)
+  rider_name         String
+  phone_number       String
   orders             customer_order[]
 }
 
 model customer_order {
   order_id                Int               @id @default(autoincrement())
-  customer_id             Int               @db.Int
-  meal_id                 Int               @db.Int
+  customer_id             Int
+  meal_id                 Int
   order_timestamp         DateTime          @default(now())
-  delivery_person_id      Int?              @db.Int
-  order_status            String            @db.VarChar(50)
-  payment_status          String            @db.VarChar(50)
-  delivery_status         String            @db.VarChar(50)
+  delivery_person_id      Int?
+  order_status            String
+  payment_status          String
+  delivery_status         String
   delivery_preferred_date DateTime
   is_a_subscribed_meal    Boolean           @default(false)
-  offer_id                Int?              @db.Int
+  offer_id                Int?
 
   customer          customer         @relation(fields: [customer_id], references: [customer_id])
   meal_plan         meal_plan        @relation(fields: [meal_id], references: [meal_id])
@@ -106,8 +106,8 @@ model customer_order {
 
 model subscription {
   subscription_id          Int      @id @default(autoincrement())
-  customer_id              Int      @db.Int
-  meal_id                  Int      @db.Int
+  customer_id              Int
+  meal_id                  Int
   subscribe_date            DateTime @default(now())
   canceled_date            DateTime?
   delivery_preferred_date  DateTime
@@ -118,11 +118,11 @@ model subscription {
 
 model delivery_feedback {
   feedback_id   Int      @id @default(autoincrement())
-  order_id      Int      @db.Int
-  rating_value  Int      @db.Int
-  description   String?  @db.VarChar(5000)
-  image_path    String?  @db.VarChar(255)
-  reply         String?  @db.VarChar(5000)
+  order_id      Int
+  rating_value  Int
+  description   String?
+  image_path    String?
+  reply         String?
   replied_date  DateTime?
 
   order         customer_order @relation(fields: [order_id], references: [order_id])
@@ -130,13 +130,13 @@ model delivery_feedback {
 
 model offer {
   offer_id        Int      @id @default(autoincrement())
-  coupon_number   String   @unique @db.VarChar(50)
+  coupon_number   String   @unique
   expiry_date     DateTime
-  usage_limit     Int      @db.Int
-  min_order_value Decimal  @db.Decimal(10, 2)
-  title           String   @db.VarChar(100)
-  description     String   @db.VarChar(1000)
-  amount          Decimal  @db.Decimal(10, 2)
+  usage_limit     Int
+  min_order_value Decimal
+  title           String
+  description     String
+  amount          Decimal
   is_enabled      Boolean  @default(true)
 
   orders          customer_order[]
@@ -144,10 +144,10 @@ model offer {
 
 model complaint {
   complaint_id     Int      @id @default(autoincrement())
-  customer_id      Int      @db.Int
-  description      String   @db.VarChar(5000)
+  customer_id      Int
+  description      String
   date_submitted   DateTime @default(now())
-  resolution_note  String?  @db.VarChar(1000)
+  resolution_note  String?
   resolved_date    DateTime?
   is_resolved      Boolean  @default(false)
 
@@ -156,10 +156,10 @@ model complaint {
 
 model staff {
   staff_id     Int     @id @default(autoincrement())
-  fname        String  @db.VarChar(100)
-  lname        String  @db.VarChar(100)
-  phone_number String  @db.VarChar(15)
-  status       String  @db.VarChar(50)
+  fname        String
+  lname        String
+  phone_number String
+  status       String
   credential   staff_credential?
   staff_roles staff_role[]
   stock_adjustments stock_adjustment[]
@@ -170,27 +170,27 @@ model staff_credential {
   staff_credential_id Int      @id @default(autoincrement())
   staff_id            Int      @unique
   staff               staff    @relation(fields: [staff_id], references: [staff_id])
-  email               String   @db.VarChar(100)
-  staff_password      String   @db.VarChar(255)
+  email               String
+  staff_password      String
 }
 
 model role {
   role_id     Int     @id @default(autoincrement())
-  role        String  @db.VarChar(100)
-  description String  @db.VarChar(500)
+  role        String
+  description String
   staff_roles staff_role[]
   role_permissions role_permission[]
 }
 
 model permission {
   permission_id    Int     @id @default(autoincrement())
-  permission_type  String  @db.VarChar(500)
+  permission_type  String
   role_permissions role_permission[]
 }
 
 model staff_role {
-  staff_id Int @db.Int
-  role_id  Int @db.Int
+  staff_id Int
+  role_id  Int
 
   staff staff @relation(fields: [staff_id], references: [staff_id])
   role  role  @relation(fields: [role_id], references: [role_id])
@@ -199,8 +199,8 @@ model staff_role {
 }
 
 model role_permission {
-  role_id       Int @db.Int
-  permission_id Int @db.Int
+  role_id       Int
+  permission_id Int
 
   role       role       @relation(fields: [role_id], references: [role_id])
   permission permission @relation(fields: [permission_id], references: [permission_id])
@@ -210,13 +210,13 @@ model role_permission {
 
 model supplier {
   supplier_id   Int     @id @default(autoincrement())
-  name          String  @db.VarChar(100)
-  agent_name    String  @db.VarChar(100)
-  email         String  @db.VarChar(100)
-  phone_number  String  @db.VarChar(15)
-  address_line_1 String? @db.VarChar(200)
-  address_line_2 String? @db.VarChar(200)
-  address_line_3 String? @db.VarChar(200)
+  name          String
+  agent_name    String
+  email         String
+  phone_number  String
+  address_line_1 String?
+  address_line_2 String?
+  address_line_3 String?
   inventory_items supplier_inventory_item[]
   supplier_requests supplier_request[]
   purchase_orders  purchase_order[]
@@ -224,15 +224,15 @@ model supplier {
 
 model inventory_item {
   inventory_id       Int      @id @default(autoincrement())
-  ingredient_name    String   @db.VarChar(100)
-  category            String   @db.VarChar(100)
-  unit                String   @db.VarChar(50)
-  current_quantity    Int      @db.Int
-  normal_stock_level  Int      @db.Int
-  low_stock_level     Int      @db.Int
+  ingredient_name    String
+  category            String
+  unit                String
+  current_quantity    Int
+  normal_stock_level  Int
+  low_stock_level     Int
   is_out_of_stock     Boolean  @default(false)
   expiry_date         DateTime?
-  unit_price          Decimal  @db.Decimal(10, 2)
+  unit_price          Decimal
   updated_timestamp   DateTime @updatedAt
   suppliers          supplier_inventory_item[]
   stock_adjustments  stock_adjustment[]
@@ -240,8 +240,8 @@ model inventory_item {
 }
 
 model supplier_inventory_item {
-  supplier_id    Int     @db.Int
-  inventory_id  Int     @db.Int
+  supplier_id    Int
+  inventory_id  Int
   is_available  Boolean @default(true)
 
   supplier   supplier        @relation(fields: [supplier_id], references: [supplier_id])
@@ -252,14 +252,14 @@ model supplier_inventory_item {
 
 model stock_adjustment {
   stock_adjust_id   Int      @id @default(autoincrement())
-  inventory_id     Int      @db.Int
-  staff_id          Int      @db.Int
-  adjustment_type  String   @db.VarChar(100)
-  quantity         Int      @db.Int
-  batch_number      String?  @db.VarChar(255)
+  inventory_id     Int
+  staff_id          Int
+  adjustment_type  String
+  quantity         Int
+  batch_number      String?
   expiry_date      DateTime?
   entered_date     DateTime @default(now())
-  remarks          String?  @db.VarChar(2000)
+  remarks          String?
 
   inventory  inventory_item @relation(fields: [inventory_id], references: [inventory_id])
   staff      staff          @relation(fields: [staff_id], references: [staff_id])
@@ -267,14 +267,14 @@ model stock_adjustment {
 
 model supplier_request {
   supplier_req_id Int      @id @default(autoincrement())
-  supplier_id     Int      @db.Int
-  inventory_id    Int      @db.Int
-  quantity        Int      @db.Int
+  supplier_id     Int
+  inventory_id    Int
+  quantity        Int
   requested_date  DateTime @default(now())
   required_date   DateTime
-  status          String   @db.VarChar(50)
-  remarks         String?  @db.VarChar(2000)
-  staff_id        Int      @db.Int
+  status          String
+  remarks         String?
+  staff_id        Int
 
   supplier   supplier        @relation(fields: [supplier_id], references: [supplier_id])
   inventory  inventory_item  @relation(fields: [inventory_id], references: [inventory_id])
@@ -283,18 +283,18 @@ model supplier_request {
 
 model setting {
   setting_id     Int     @id @default(autoincrement())
-  delivery_radius Int     @db.Int
-  latitude       Decimal @db.Decimal(10, 8)
-  longitude      Decimal @db.Decimal(11, 8)
-  delivery_fee   Decimal @db.Decimal(10, 2)
+  delivery_radius Int
+  latitude       Decimal
+  longitude      Decimal
+  delivery_fee   Decimal
 }
 
 model purchase_order {
   po_id        Int      @id @default(autoincrement())
-  supplier_id  Int      @db.Int
-  item_count   Int      @db.Int
+  supplier_id  Int
+  item_count   Int
   date         DateTime @default(now())
-  status       String   @db.VarChar(100)
+  status       String
 
   supplier  supplier @relation(fields: [supplier_id], references: [supplier_id])
 }
