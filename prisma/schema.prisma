@@ -300,4 +300,11 @@ model purchase_order {
   supplier  supplier @relation(fields: [supplier_id], references: [supplier_id])
 }
 
+model admin {
+  admin_id       Int      @id @default(autoincrement())
+  admin_username String   @unique
+  admin_password String
+  last_logged_in DateTime?
+  created_at     DateTime @default(now())
+}
 
