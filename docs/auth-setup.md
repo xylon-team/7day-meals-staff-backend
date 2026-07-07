@@ -139,7 +139,7 @@ The auth module consists of:
 - **auth.controller.ts** - Handles login requests
 - **auth.service.ts** - Validates credentials and generates tokens
 - **strategies/jwt.strategy.ts** - Validates JWT tokens
-- **guards/jwt-auth.guard.ts** - Protects routes
+- **guards/jwt-auth.guard.ts** - Protects routes with custom error handling for expired tokens
 - **dto/login.dto.ts** - Login request validation
 - **dto/login-response.dto.ts** - Login response structure
 - **auth.module.ts** - Module configuration
@@ -159,3 +159,8 @@ The auth module consists of:
 - Verify admin_username and admin_password are correct
 - Check that the admin user exists in the database
 - Ensure the password is hashed with bcrypt
+
+**"Token has expired" error:**
+- The JWT token has exceeded its expiration time (default: 1 day)
+- User needs to log in again to get a fresh token
+- Token expiration is determined by the `JWT_EXPIRES_IN` environment variable
