@@ -103,4 +103,75 @@ export class RoleService {
       throw error;
     }
   }
+
+  //GET A ROLE'S PERMISSION SET
+  async getPermissionsByRoleId(roleId: number) {
+    const role = await this.prisma.role.findUnique({
+      where: { role_id: roleId },
+    });
+    if (!role) {
+      throw new NotFoundException(`Role with ID ${roleId} not found`);
+    }
+
+    const rolePermissions = await this.prisma.role_permission.findMany({
+      where: { role_id: roleId },
+      include: {
+        permission: true,
+      },
+    });
+
+    return rolePermissions.map(rp => rp.permission);
+  }
+
+  //ASSIGNING PERMISSIONS TO ROLE
+  async assignPermissions(roleId: number, permissionIds: number[]) {
+    // First verify the role exists
+    const role = await this.prisma.role.findUnique({
+      where: { role_id: roleId },
+    });
+    if (!role) {
+      throw new NotFoundException(`Role with ID ${roleId} not found`);
+    }
+
+    try {
+      // Create new role_permission entries, skipping duplicates
+      return await this.prisma.role_permission.createMany({
+        data: permissionIds.map(permissionId => ({
+          role_id: roleId,
+          permission_id: permissionId,
+        })),
+        skipDuplicates: true,
+      });
+    } catch (error) {
+      if (error.code === 'P2003') {
+        throw new NotFoundException(`One or more permission IDs are invalid`);
+      }
+      throw error;
+    }
+  }
+
+  //REMOVING PERMISSIONS FROM ROLE
+  async removePermissions(roleId: number, permissionIds: number[]) {
+    // First verify the role exists
+    const role = await this.prisma.role.findUnique({
+      where: { role_id: roleId },
+    });
+    if (!role) {
+      throw new NotFoundException(`Role with ID ${roleId} not found`);
+    }
+
+    return await this.prisma.role_permission.deleteMany({
+      where: {
+        role_id: roleId,
+        permission_id: {
+          in: permissionIds,
+        },
+      },
+    });
+  }
+
+  //READ PERMISSIONS
+  async readAllPermissions() {
+    return await this.prisma.permission.findMany();
+  }
 }
