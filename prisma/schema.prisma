@@ -194,7 +194,7 @@ model staff_role {
   role_id  Int
 
   staff staff @relation(fields: [staff_id], references: [staff_id])
-  role  role  @relation(fields: [role_id], references: [role_id])
+  role  role  @relation(fields: [role_id], references: [role_id], onDelete: Cascade)
 
   @@id([staff_id, role_id])
 }
@@ -203,7 +203,7 @@ model role_permission {
   role_id       Int
   permission_id Int
 
-  role       role       @relation(fields: [role_id], references: [role_id])
+  role       role       @relation(fields: [role_id], references: [role_id], onDelete: Cascade)
   permission permission @relation(fields: [permission_id], references: [permission_id])
 
   @@id([role_id, permission_id])

@@ -7,6 +7,7 @@ import { CustomerModule } from './customer/customer.module';
 import { AdminAuthModule } from './admin-auth/admin-auth.module';
 import { StaffModule } from './staff/staff.module';
 import { SettingModule } from './settings/setting.module';
+import { RoleModule } from './role/role.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { SettingModule } from './settings/setting.module';
     AdminAuthModule,
     StaffModule,
     SettingModule,
+    RoleModule
   ],
   controllers: [AppController],
   providers: [AppService],
