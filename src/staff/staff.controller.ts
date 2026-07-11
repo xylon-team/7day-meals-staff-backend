@@ -13,8 +13,8 @@ export class StaffController {
 
   //CREATE ENDPOINT
   @Post()
-  create(@Body() createStaffDto: CreateStaffDto) {
-    return this.staffService.create(createStaffDto);
+  create(@Body() createStaffDto: CreateStaffDto, @Body() createStaffCredentialDto: CreateStaffCredentialDto) {
+    return this.staffService.createStaffWithCredential(createStaffDto, createStaffCredentialDto);
   }
 
   //READ ENDPOINTS
@@ -27,11 +27,14 @@ export class StaffController {
   findOne(@Param('id') id: string) {
     return this.staffService.findOne(+id);
   }
-
   //UPDATE ENDPOINT
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStaffDto: UpdateStaffDto) {
-    return this.staffService.update(+id, updateStaffDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateStaffDto: UpdateStaffDto,
+    @Body() updateStaffCredentialDto?: UpdateStaffCredentialDto,
+  ) {
+    return this.staffService.update(+id, updateStaffDto, updateStaffCredentialDto);
   }
 
   //DELETE ENDPOINT
@@ -42,16 +45,16 @@ export class StaffController {
 
   //CREDENTIAL ENDPOINTS
   // CREATE CREDENTIAL
-  @Post(':id/credential')
-  createCredential(@Param('id') id: string, @Body() createStaffCredentialDto: CreateStaffCredentialDto) {
-    return this.staffService.createCredential({ ...createStaffCredentialDto, staff_id: +id });
-  }
+  // @Post(':id/credential')
+  // createCredential(@Param('id') id: string, @Body() createStaffCredentialDto: CreateStaffCredentialDto) {
+  //   return this.staffService.createCredential({ ...createStaffCredentialDto, staff_id: +id });
+  // }
 
   // READ CREDENTIAL
-  @Get(':id/credential')
-  findCredential(@Param('id') id: string) {
-    return this.staffService.findCredentialByStaffId(+id);
-  }
+  // @Get(':id/credential')
+  // findCredential(@Param('id') id: string) {
+  //   return this.staffService.findCredentialByStaffId(+id);
+  // }
 
   // UPDATE CREDENTIAL
   @Patch(':id/credential')
@@ -60,10 +63,10 @@ export class StaffController {
   }
 
   // DELETE CREDENTIAL
-  @Delete(':id/credential')
-  deleteCredential(@Param('id') id: string) {
-    return this.staffService.deleteCredential(+id);
-  }
+  // @Delete(':id/credential')
+  // deleteCredential(@Param('id') id: string) {
+  //   return this.staffService.deleteCredential(+id);
+  // }
 
 
 }

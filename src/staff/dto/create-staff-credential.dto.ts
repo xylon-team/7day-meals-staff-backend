@@ -1,6 +1,7 @@
-import { IsString, IsNotEmpty, IsInt, IsEmail, MinLength, Matches } from 'class-validator';
+import { IsString, IsNotEmpty, IsInt, IsEmail, MinLength, Matches, isNotEmpty, isInt } from 'class-validator';
 
 export class CreateStaffCredentialDto {
+  
   @IsInt()
   @IsNotEmpty()
   staff_id: number;
