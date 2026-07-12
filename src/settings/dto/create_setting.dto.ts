@@ -1,7 +1,7 @@
-import { IsNotEmpty, IsNumber, IsDecimal, IsPositive } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsInt, IsPositive } from 'class-validator';
 
 export class CreateSettingDto {
-  @IsNumber()
+  @IsInt()
   @IsNotEmpty()
   delivery_radius: number;
 

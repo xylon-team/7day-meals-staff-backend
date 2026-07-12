@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateSettingDto } from './dto/create_setting.dto';
 import { UpdateSettingDto } from './dto/update_setting.dto';
@@ -34,14 +34,10 @@ export class SettingService {
       throw new NotFoundException('Setting not found');
     }
     
-    try {
-      return await this.prisma.setting.update({
-        where: { setting_id: existingSetting.setting_id },
-        data: updateSettingDto,
-      });
-    } catch (error) {
-      throw error;
-    }
+    return await this.prisma.setting.update({
+      where: { setting_id: existingSetting.setting_id },
+      data: updateSettingDto,
+    });
   }
 
 
