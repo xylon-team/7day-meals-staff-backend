@@ -62,6 +62,21 @@ Pass `?includePermissions=true` to `GET /role`, `GET /role/:id`, or `GET /role/s
 
 ---
 
+## Table of Contents
+
+- [1. List all permissions](#1-list-all-permissions)
+- [2. Create a role](#2-create-a-role)
+- [3. List all roles](#3-list-all-roles)
+- [4. Search roles](#4-search-roles)
+- [5. Get role by ID](#5-get-role-by-id)
+- [6. Update role](#6-update-role)
+- [7. Delete role](#7-delete-role)
+- [8. Get role permissions](#8-get-role-permissions)
+- [9. Assign permissions to role](#9-assign-permissions-to-role)
+- [10. Remove permissions from role](#10-remove-permissions-from-role)
+
+---
+
 ## Endpoints
 
 ### 1. List all permissions
