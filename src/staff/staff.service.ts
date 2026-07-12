@@ -199,12 +199,18 @@ export class StaffService {
   //UPDATE CREDENTIAL
   async updateCredential(staffId: number, updateStaffCredentialDto: UpdateStaffCredentialDto) {
     try {
-      const data: any = { ...updateStaffCredentialDto };
+      const data: any = {};
 
-      data.staff_id = staffId;
+      if (updateStaffCredentialDto.email !== undefined && updateStaffCredentialDto.email !== null) {
+        data.email = updateStaffCredentialDto.email;
+      }
       
-      if (updateStaffCredentialDto.staff_password) {
+      if (updateStaffCredentialDto.staff_password !== undefined && updateStaffCredentialDto.staff_password !== null) {
         data.staff_password = await bcrypt.hash(updateStaffCredentialDto.staff_password, 10);
+      }
+
+      if (Object.keys(data).length === 0) {
+        throw new BadRequestException('No valid fields provided for update');
       }
       
       return await this.prisma.staff_credential.update({
