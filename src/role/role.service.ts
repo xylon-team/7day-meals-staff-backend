@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException, Search } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRoleDto } from './dto/create_role.dto';
 import { UpdateRoleDto } from './dto/update_role.dto';
@@ -61,8 +61,8 @@ export class RoleService {
     return await this.prisma.role.findMany({
       where: {
         AND: [
-          searchRoleDto.role ? { role: { contains: searchRoleDto.role } } : {},
-          searchRoleDto.description ? { description: { contains: searchRoleDto.description } } : {},
+          searchRoleDto.role ? { role: { contains: searchRoleDto.role, mode: 'insensitive' } } : {},
+          searchRoleDto.description ? { description: { contains: searchRoleDto.description, mode: 'insensitive' } } : {},
         ],
       },
       include: includePermissions ? {
