@@ -1,10 +1,9 @@
-import { Controller, Post, Body, Get, Param, Patch, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Patch, Delete, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { StaffService } from './staff.service';
-import { CreateStaffDto } from './dto/create-staff.dto';
-import { UpdateStaffDto } from './dto/update-staff.dto';
 import { AdminJwtAuthGuard } from 'src/admin-auth/guards/admin-jwt-auth.guard';
-import { CreateStaffCredentialDto } from './dto/create-staff-credential.dto';
+import { CreateStaffWithCredentialDto } from './dto/create-staff-with-cred-dto';
 import { UpdateStaffCredentialDto } from './dto/update-staff-credential.dto';
+import { UpdateStaffWithCredentialDto } from './dto/update-staff-with-cred-dto';
 
 @Controller('staff')
 @UseGuards(AdminJwtAuthGuard)
@@ -13,8 +12,8 @@ export class StaffController {
 
   //CREATE ENDPOINT
   @Post()
-  create(@Body() createStaffDto: CreateStaffDto, @Body() createStaffCredentialDto: CreateStaffCredentialDto) {
-    return this.staffService.createStaffWithCredential(createStaffDto, createStaffCredentialDto);
+  create(@Body() createStaffWithCredentialDto: CreateStaffWithCredentialDto) {
+    return this.staffService.createStaffWithCredential(createStaffWithCredentialDto);
   }
 
   //READ ENDPOINTS
@@ -24,23 +23,22 @@ export class StaffController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.staffService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.staffService.findOne(id);
   }
   //UPDATE ENDPOINT
   @Patch(':id')
   update(
-    @Param('id') id: string,
-    @Body() updateStaffDto: UpdateStaffDto,
-    @Body() updateStaffCredentialDto?: UpdateStaffCredentialDto,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateStaffWithCredentialDto: UpdateStaffWithCredentialDto,
   ) {
-    return this.staffService.update(+id, updateStaffDto, updateStaffCredentialDto);
+    return this.staffService.update(id, updateStaffWithCredentialDto);
   }
 
   //DELETE ENDPOINT
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.staffService.delete(+id);
+  delete(@Param('id', ParseIntPipe) id: number) {
+    return this.staffService.delete(id);
   }
 
   //CREDENTIAL ENDPOINTS
@@ -58,8 +56,11 @@ export class StaffController {
 
   // UPDATE CREDENTIAL
   @Patch(':id/credential')
-  updateCredential(@Param('id') id: string, @Body() updateStaffCredentialDto: UpdateStaffCredentialDto) {
-    return this.staffService.updateCredential(+id, updateStaffCredentialDto);
+  updateCredential(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateStaffCredentialDto: UpdateStaffCredentialDto,
+  ) {
+    return this.staffService.updateCredential(id, updateStaffCredentialDto);
   }
 
   // DELETE CREDENTIAL
