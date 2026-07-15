@@ -155,4 +155,56 @@ export class StaffService {
     }
   }
 
+  // STAFF ROLES
+  async assignRoles(staffId: number, roleIds: number[]) {
+    if (!roleIds || !Array.isArray(roleIds)) {
+      throw new BadRequestException('Invalid roles data provided. Please provide an array of role IDs.');
+    }
+    
+    const data = roleIds.map((roleId) => ({
+      staff_id: staffId,
+      role_id: roleId,
+    }));
+    
+    return await this.prisma.staff_role.createMany({
+      data,
+      skipDuplicates: true,
+    });
+  }
+
+  async getRoles(staffId: number) {
+    const staffRoles = await this.prisma.staff_role.findMany({
+      where: { staff_id: staffId },
+      include: {
+        role: {
+          include: {
+            role_permissions: {
+              include: {
+                permission: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    return staffRoles.map((sr) => sr.role);
+  }
+
+  async removeRole(staffId: number, roleId: number) {
+    try {
+      return await this.prisma.staff_role.delete({
+        where: {
+          staff_id_role_id: {
+            staff_id: staffId,
+            role_id: roleId,
+          },
+        },
+      });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`Role ${roleId} for staff ${staffId} not found`);
+      }
+      throw error;
+    }
+  }
 }
