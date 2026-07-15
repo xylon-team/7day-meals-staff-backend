@@ -176,7 +176,15 @@ export class StaffService {
     const staffRoles = await this.prisma.staff_role.findMany({
       where: { staff_id: staffId },
       include: {
-        role: true,
+        role: {
+          include: {
+            role_permissions: {
+              include: {
+                permission: true,
+              },
+            },
+          },
+        },
       },
     });
     return staffRoles.map((sr) => sr.role);
