@@ -23,8 +23,8 @@ Parameters are labeled by location:
 
 ```json
 {
-  "email": "john.doe@example.com",
-  "staff_password": "SecurePass123!"
+  "email": string,
+  "staff_password": string
 }
 ```
 
@@ -32,7 +32,7 @@ Parameters are labeled by location:
 
 ```json
 {
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "access_token": string (JWT)
 }
 ```
 

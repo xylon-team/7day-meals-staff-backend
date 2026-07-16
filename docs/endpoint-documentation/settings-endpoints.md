@@ -23,13 +23,13 @@ Parameters are labeled by location:
 
 ```json
 {
-  "id": 1,
-  "delivery_radius": 10,
-  "latitude": 40.7128,
-  "longitude": -74.006,
-  "delivery_fee": 5.99,
-  "created_at": "2026-07-12T10:00:00.000Z",
-  "updated_at": "2026-07-12T10:00:00.000Z"
+  "id": number,
+  "delivery_radius": number,
+  "latitude": number,
+  "longitude": number,
+  "delivery_fee": number,
+  "created_at": string (ISO 8601 datetime),
+  "updated_at": string (ISO 8601 datetime)
 }
 ```
 

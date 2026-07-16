@@ -23,11 +23,11 @@ Parameters are labeled by location:
 
 ```json
 {
-  "staff_id": 1,
-  "fname": "John",
-  "lname": "Doe",
-  "phone_number": "1234567890",
-  "status": "active"
+  "staff_id": number,
+  "fname": string,
+  "lname": string,
+  "phone_number": string,
+  "status": string ("active" | "inactive")
 }
 ```
 
@@ -35,10 +35,10 @@ Parameters are labeled by location:
 
 ```json
 {
-  "staff_credential_id": 1,
-  "staff_id": 1,
-  "email": "john.doe@example.com",
-  "staff_password": "hashed_password"
+  "staff_credential_id": number,
+  "staff_id": number,
+  "email": string,
+  "staff_password": string (hashed)
 }
 ```
 

@@ -59,8 +59,8 @@ Parameters are labeled by location:
 
 ```json
 {
-  "field_name": "value",
-  "another_field": "value"
+  "field_name": type,
+  "another_field": type
 }
 ```
 
@@ -68,7 +68,7 @@ Parameters are labeled by location:
 
 ```json
 {
-  "field_name": "value"
+  "field_name": type
 }
 ```
 
@@ -78,8 +78,8 @@ Pass `?includeRelated=true` to `GET /endpoint` to include related data.
 
 ```json
 {
-  "field_name": "value",
-  "related_data": [...]
+  "field_name": type,
+  "related_data": type[]
 }
 ```
 
@@ -88,7 +88,9 @@ Pass `?includeRelated=true` to `GET /endpoint` to include related data.
 
 **Guidelines:**
 - Document all main data models used by the endpoints
-- Use JSON code blocks for examples
+- Use JSON code blocks with **types** instead of example values (e.g., `number`, `string`, `boolean`, `type[]`, `Record<string, type>`)
+- For enum or constrained values, note the valid options (e.g., `string ("active" | "inactive")`)
+- For special formats, add context (e.g., `string (ISO 8601 datetime)`, `string (JWT)`)
 - Include variations (e.g., with/without related data)
 - Note any query parameters that modify the response structure
 
@@ -223,10 +225,11 @@ For endpoints with parameters, use the appropriate format:
 ```
 
 **Guidelines:**
-- Use realistic, meaningful example values
+- Use realistic, meaningful example values in endpoint request/response examples
 - Keep examples concise but representative
 - For array responses, show 1-2 items with `...` to indicate more
 - For responses that vary based on parameters, show the most common case
+- **Note:** Data Models section uses types, but endpoint examples use concrete values
 
 ---
 
@@ -279,7 +282,8 @@ Parameters are labeled by location:
 
 ```json
 {
-  "field_name": "value"
+  "field_name": type,
+  "another_field": type
 }
 ```
 
@@ -287,7 +291,7 @@ Parameters are labeled by location:
 
 ```json
 {
-  "field_name": "value"
+  "field_name": type
 }
 ```
 
