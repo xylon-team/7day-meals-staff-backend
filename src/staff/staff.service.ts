@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateStaffDto } from './dto/create-staff.dto';
-import { UpdateStaffDto } from './dto/update-staff.dto';
 import { CreateStaffCredentialDto } from './dto/create-staff-credential.dto';
 import { UpdateStaffCredentialDto } from './dto/update-staff-credential.dto';
+import { CreateStaffWithCredentialDto } from './dto/create-staff-with-cred-dto';
+import { UpdateStaffWithCredentialDto } from './dto/update-staff-with-cred-dto';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
@@ -40,17 +41,67 @@ export class StaffService {
   }
 
   //UPDATE
-  async update(id: number, updateStaffDto: UpdateStaffDto) {
+  async update(id: number, updateStaffWithCredentialDto: UpdateStaffWithCredentialDto) {
     try {
-      return await this.prisma.staff.update({
-        where: { staff_id: id },
-        data: updateStaffDto,
-      });
+      const { email, staff_password, ...staffData } = updateStaffWithCredentialDto;
+
+      // Filter out null and undefined values from staff data
+      const filteredStaffDto = Object.fromEntries(
+        Object.entries(staffData).filter(([_, value]) => value !== undefined && value !== null)
+      );
+
+      // Build credential update data
+      const credentialData: any = {};
+      if (email !== undefined && email !== null) {
+        credentialData.email = email;
+      }
+      if (staff_password !== undefined && staff_password !== null) {
+        credentialData.staff_password = await bcrypt.hash(staff_password, 10);
+      }
+
+      const hasCredentialUpdate = Object.keys(credentialData).length > 0;
+      const hasStaffUpdate = Object.keys(filteredStaffDto).length > 0;
+
+      if (hasCredentialUpdate && hasStaffUpdate) {
+        // Batch update both staff and credential
+        return await this.prisma.$transaction(async (tx) => {
+          const staff = await tx.staff.update({
+            where: { staff_id: id },
+            data: filteredStaffDto,
+          });
+
+          await tx.staff_credential.update({
+            where: { staff_id: id },
+            data: credentialData,
+          });
+
+          return staff;
+        });
+      } else if (hasCredentialUpdate) {
+        // Update only credential
+        await this.prisma.staff_credential.update({
+          where: { staff_id: id },
+          data: credentialData,
+        });
+        return this.findOne(id);
+      } else if (hasStaffUpdate) {
+        // Update only staff
+        return await this.prisma.staff.update({
+          where: { staff_id: id },
+          data: filteredStaffDto,
+        });
+      } else {
+        throw new BadRequestException('No update data provided');
+      }
     } catch (error) {
       if (error.code === 'P2025') {
         throw new NotFoundException(`Staff with id ${id} not found`);
       }
       if (error.code === 'P2002') {
+        const target = error.meta?.target as string[] | undefined;
+        if (target?.includes('email')) {
+          throw new ConflictException(`Email already exists`);
+        }
         throw new ConflictException('Staff with this information already exists');
       }
       throw error;
@@ -97,6 +148,43 @@ export class StaffService {
     }
   }
 
+  //CREATE STAFF WITH CREDENTIAL (TRANSACTION)
+  async createStaffWithCredential(createStaffWithCredentialDto: CreateStaffWithCredentialDto) {
+    try {
+      const hashedPassword = await bcrypt.hash(createStaffWithCredentialDto.staff_password, 10);
+      
+      return await this.prisma.$transaction(async (tx) => {
+        const staff = await tx.staff.create({
+          data: {
+            fname: createStaffWithCredentialDto.fname,
+            lname: createStaffWithCredentialDto.lname,
+            phone_number: createStaffWithCredentialDto.phone_number,
+            status: createStaffWithCredentialDto.status,
+          },
+        });
+
+        const credential = await tx.staff_credential.create({
+          data: {
+            staff_id: staff.staff_id,
+            email: createStaffWithCredentialDto.email,
+            staff_password: hashedPassword,
+          },
+        });
+
+        return staff;
+      });
+    } catch (error) {
+      if (error.code === 'P2002') {
+        const target = error.meta?.target as string[] | undefined;
+        if (target?.includes('email')) {
+          throw new ConflictException(`Email already exists`);
+        }
+        throw new ConflictException('Staff with this information already exists');
+      }
+      throw error;
+    }
+  }
+
   //READ CREDENTIAL
   async findCredentialByStaffId(staffId: number) {
     const credential = await this.prisma.staff_credential.findUnique({
@@ -111,12 +199,18 @@ export class StaffService {
   //UPDATE CREDENTIAL
   async updateCredential(staffId: number, updateStaffCredentialDto: UpdateStaffCredentialDto) {
     try {
-      const data: any = { ...updateStaffCredentialDto };
+      const data: any = {};
 
-      data.staff_id = staffId;
+      if (updateStaffCredentialDto.email !== undefined && updateStaffCredentialDto.email !== null) {
+        data.email = updateStaffCredentialDto.email;
+      }
       
-      if (updateStaffCredentialDto.staff_password) {
+      if (updateStaffCredentialDto.staff_password !== undefined && updateStaffCredentialDto.staff_password !== null) {
         data.staff_password = await bcrypt.hash(updateStaffCredentialDto.staff_password, 10);
+      }
+
+      if (Object.keys(data).length === 0) {
+        throw new BadRequestException('No valid fields provided for update');
       }
       
       return await this.prisma.staff_credential.update({
