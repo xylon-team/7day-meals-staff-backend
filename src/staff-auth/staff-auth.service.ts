@@ -16,7 +16,7 @@ export class StaffAuthService {
 
     const { email, staff_password } = loginDto;
 
-    const staffCredential = await this.prisma.staff_credential.findFirst({
+    const staffCredential = await this.prisma.staff_credential.findUnique({
       where: { email },
       include: {
         staff: true,
@@ -40,7 +40,7 @@ export class StaffAuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload = { sub: staffCredential.staff_id, email: staffCredential.email };
+    const payload = { sub: staffCredential.staff_id, email: staffCredential.email, token_version: staffCredential.token_version };
 
     return {
       access_token: this.jwtService.sign(payload),

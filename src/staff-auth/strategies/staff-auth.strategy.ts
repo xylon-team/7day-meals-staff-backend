@@ -24,6 +24,9 @@ export class StaffJwtStrategy extends PassportStrategy(Strategy, 'staff-jwt') {
   async validate(payload: any) {
     const staff = await this.prisma.staff.findUnique({
       where: { staff_id: payload.sub },
+      include: {
+        credential: true,
+      },
     });
 
     if (!staff) {
@@ -31,6 +34,12 @@ export class StaffJwtStrategy extends PassportStrategy(Strategy, 'staff-jwt') {
     }
     if (staff.status !== 'active') {
       throw new UnauthorizedException('Staff account is not active');
+    }
+    if (!staff.credential) {
+      throw new UnauthorizedException('Staff credentials not found');
+    }
+    if (payload.token_version !== staff.credential.token_version) {
+      throw new UnauthorizedException('Token has been invalidated');
     }
 
     return { staffId: payload.sub, email: payload.email };

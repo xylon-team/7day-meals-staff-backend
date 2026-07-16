@@ -72,7 +72,10 @@ export class StaffService {
 
           await tx.staff_credential.update({
             where: { staff_id: id },
-            data: credentialData,
+            data: {
+              ...credentialData,
+              token_version: { increment: 1 }, //UPDATING THE TOKEN VER
+            },
           });
 
           return staff;
@@ -81,7 +84,10 @@ export class StaffService {
         // Update only credential
         await this.prisma.staff_credential.update({
           where: { staff_id: id },
-          data: credentialData,
+          data: {
+            ...credentialData,
+            token_version: { increment: 1 }, //UPDATING THE TOKEN VER
+          },
         });
         return this.findOne(id);
       } else if (hasStaffUpdate) {
@@ -215,7 +221,10 @@ export class StaffService {
       
       return await this.prisma.staff_credential.update({
         where: { staff_id: staffId },
-        data,
+        data: {
+          ...data,
+          token_version: { increment: 1 }, //UPDATING TOKEN VER
+        },
       });
     } catch (error) {
       if (error.code === 'P2025') {

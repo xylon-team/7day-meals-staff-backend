@@ -173,6 +173,7 @@ model staff_credential {
   staff               staff    @relation(fields: [staff_id], references: [staff_id], onDelete: Cascade)
   email               String   @unique
   staff_password      String
+  token_version      Int      @default(0)
 }
 
 model role {
