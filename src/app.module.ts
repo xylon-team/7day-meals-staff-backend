@@ -18,7 +18,7 @@ import { RoleModule } from './role/role.module';
     PrismaModule,
     CustomerModule,
     AdminAuthModule,
-    StaffAuthModule
+    StaffAuthModule,
     StaffModule,
     SettingModule,
     RoleModule
