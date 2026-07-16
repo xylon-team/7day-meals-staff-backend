@@ -7,9 +7,10 @@ import { AdminDashboardDto } from './dto/admin-dashboard-response.dto';
 export class StatController {
   constructor(private readonly statService: StatService) {}
 
+  //ADMIN DASHBOARD
   @UseGuards(AdminJwtAuthGuard)
   @Get('admin-dashboard')
-  async getDashboardStats(): Promise<AdminDashboardDto> {
-    return this.statService.getDashboardStats();
+  async getAdminDashboardStats(): Promise<AdminDashboardDto> {
+    return this.statService.getAdminDashboardStats();
   }
 }

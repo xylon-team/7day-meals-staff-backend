@@ -7,7 +7,8 @@ export class StatService {
 
   constructor(private prisma: PrismaService) {}
 
-  async getDashboardStats() {
+  //ADMIN DASHBOARD
+  async getAdminDashboardStats() {
     const errors: string[] = [];
 
     //Get total staff count
