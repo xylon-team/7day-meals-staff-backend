@@ -193,7 +193,7 @@ model staff_role {
   staff_id Int
   role_id  Int
 
-  staff staff @relation(fields: [staff_id], references: [staff_id])
+  staff staff @relation(fields: [staff_id], references: [staff_id], onDelete: Cascade)
   role  role  @relation(fields: [role_id], references: [role_id], onDelete: Cascade)
 
   @@id([staff_id, role_id])
