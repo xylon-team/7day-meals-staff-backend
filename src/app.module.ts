@@ -8,6 +8,7 @@ import { AdminAuthModule } from './admin-auth/admin-auth.module';
 import { StaffModule } from './staff/staff.module';
 import { SettingModule } from './settings/setting.module';
 import { RoleModule } from './role/role.module';
+import { StaffAuthModule } from './staff-auth/staff-auth.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { RoleModule } from './role/role.module';
     AdminAuthModule,
     StaffModule,
     SettingModule,
-    RoleModule
+    RoleModule,
+    StaffAuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
