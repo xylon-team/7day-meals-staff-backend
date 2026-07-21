@@ -1,13 +1,17 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as nodemailer from 'nodemailer';
 import * as bcrypt from 'bcryptjs';
+import { JwtService } from '@nestjs/jwt';
+import { StaffLoginRequestDto } from './dto/staff-login-request.dto';
+import { StaffLoginResponseDto } from './dto/staff-login-response.dto';
+
 
 @Injectable()
 export class StaffAuthService {
   private transporter: nodemailer.Transporter;
 
-  constructor(private prisma: PrismaService) {
+  constructor(private prisma: PrismaService, private jwtService: JwtService) {
     this.transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || 'smtp.gmail.com',
       port: parseInt(process.env.SMTP_PORT || '587', 10),
@@ -17,6 +21,41 @@ export class StaffAuthService {
         pass: process.env.SMTP_PASS,
       },
     });
+  }
+  
+  async login(loginDto: StaffLoginRequestDto): Promise<StaffLoginResponseDto> {
+
+    const { email, staff_password } = loginDto;
+
+    const staffCredential = await this.prisma.staff_credential.findUnique({
+      where: { email },
+      include: {
+        staff: true,
+      },
+    });
+
+    if (!staffCredential) {
+    throw new UnauthorizedException('Invalid credentials');
+    }
+
+    if (!staffCredential.staff || staffCredential.staff.status !== 'active') {
+      throw new UnauthorizedException('Staff account is inactive');
+    }
+    
+    const isPasswordValid = await bcrypt.compare(
+      staff_password,
+      staffCredential.staff_password,
+    );
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const payload = { sub: staffCredential.staff_id, email: staffCredential.email, token_version: staffCredential.token_version };
+
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
   }
 
   async sendOtpEmail(email: string) {

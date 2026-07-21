@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, ParseArrayPipe, ParseIntPipe } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { CreateRoleDto } from './dto/create_role.dto';
 import { UpdateRoleDto } from './dto/update_role.dto';
@@ -38,61 +38,43 @@ export class RoleController {
 
   //READ BY ID
   @Get(':id')
-  findOne(@Param('id') id: string, @Query('includePermissions') includePermissions?: string) {
-    const parsedId = parseInt(id, 10);
-    if (isNaN(parsedId)) {
-      throw new BadRequestException('Invalid ID format');
-    }
-    return this.roleService.findById(parsedId, includePermissions === 'true');
+  findOne(@Param('id', ParseIntPipe) id: number, @Query('includePermissions') includePermissions?: string) {
+    return this.roleService.findById(id, includePermissions === 'true');
   }
 
   //UPDATE
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
-    const parsedId = parseInt(id, 10);
-    if (isNaN(parsedId)) {
-      throw new BadRequestException('Invalid ID format');
-    }
-    return this.roleService.update(parsedId, updateRoleDto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateRoleDto: UpdateRoleDto) {
+    return this.roleService.update(id, updateRoleDto);
   }
 
   //DELETE
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    const parsedId = parseInt(id, 10);
-    if (isNaN(parsedId)) {
-      throw new BadRequestException('Invalid ID format');
-    }
-    return this.roleService.delete(parsedId);
+  delete(@Param('id', ParseIntPipe) id: number) {
+    return this.roleService.delete(id);
   }
 
   //GET A ROLE'S PERMISSION SET
   @Get(':id/permissions')
-  getPermissions(@Param('id') id: string) {
-    const parsedId = parseInt(id, 10);
-    if (isNaN(parsedId)) {
-      throw new BadRequestException('Invalid ID format');
-    }
-    return this.roleService.getPermissionsByRoleId(parsedId);
+  getPermissions(@Param('id', ParseIntPipe) id: number) {
+    return this.roleService.getPermissionsByRoleId(id);
   }
 
   //ASSIGN PERMS TO ROLE ENDPOINT
   @Post(':id/permissions')
-  assignPermissions(@Param('id') id: string, @Body('permissionIds') permissionIds: number[]) {
-    const parsedId = parseInt(id, 10);
-    if (isNaN(parsedId)) {
-      throw new BadRequestException('Invalid ID format');
-    }
-    return this.roleService.assignPermissions(parsedId, permissionIds);
+  assignPermissions(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('permissionIds', new ParseArrayPipe({ items: Number })) permissionIds: number[]
+  ) {
+    return this.roleService.assignPermissions(id, permissionIds);
   }
 
   //REMOVE PERMS FROM ROLE ENDPOINT
   @Delete(':id/permissions')
-  removePermissions(@Param('id') id: string, @Body('permissionIds') permissionIds: number[]) {
-    const parsedId = parseInt(id, 10);
-    if (isNaN(parsedId)) {
-      throw new BadRequestException('Invalid ID format');
-    }
-    return this.roleService.removePermissions(parsedId, permissionIds);
+  removePermissions(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('permissionIds', new ParseArrayPipe({ items: Number })) permissionIds: number[]
+  ) {
+    return this.roleService.removePermissions(id, permissionIds);
   }
 }

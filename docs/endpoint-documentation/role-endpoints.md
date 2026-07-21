@@ -23,9 +23,9 @@ Parameters are labeled by location:
 
 ```json
 {
-  "role_id": 1,
-  "role": "manager",
-  "description": "Manages staff and operations"
+  "role_id": number,
+  "role": string,
+  "description": string
 }
 ```
 
@@ -33,8 +33,8 @@ Parameters are labeled by location:
 
 ```json
 {
-  "permission_id": 1,
-  "permission_type": "manage_staff"
+  "permission_id": number,
+  "permission_type": string
 }
 ```
 
@@ -44,16 +44,16 @@ Pass `?includePermissions=true` to `GET /role`, `GET /role/:id`, or `GET /role/s
 
 ```json
 {
-  "role_id": 1,
-  "role": "manager",
-  "description": "Manages staff and operations",
+  "role_id": number,
+  "role": string,
+  "description": string,
   "role_permissions": [
     {
-      "role_id": 1,
-      "permission_id": 2,
+      "role_id": number,
+      "permission_id": number,
       "permission": {
-        "permission_id": 2,
-        "permission_type": "manage_staff"
+        "permission_id": number,
+        "permission_type": string
       }
     }
   ]
