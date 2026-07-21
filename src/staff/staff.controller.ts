@@ -69,5 +69,20 @@ export class StaffController {
   //   return this.staffService.deleteCredential(+id);
   // }
 
+  // STAFF ROLES
+  @Post(':staff_id/role')
+  assignRoles(@Param('staff_id') staffId: string, @Body() body: any) {
+    const roleIds = Array.isArray(body) ? body : (body.role_ids || body.roles || []);
+    return this.staffService.assignRoles(+staffId, roleIds);
+  }
 
+  @Get(':staff_id/role')
+  getRoles(@Param('staff_id') staffId: string) {
+    return this.staffService.getRoles(+staffId);
+  }
+
+  @Delete(':staff_id/role/:role_id')
+  removeRole(@Param('staff_id') staffId: string, @Param('role_id') roleId: string) {
+    return this.staffService.removeRole(+staffId, +roleId);
+  }
 }

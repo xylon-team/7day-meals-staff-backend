@@ -1,0 +1,947 @@
+{
+  "info": {
+    "name": "7day-meals-staff-backend API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{admin_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "your_jwt_token_here",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Staff Auth",
+      "item": [
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"mylab.me@gmail.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/staff-auth/forgot-password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "staff-auth",
+                "forgot-password"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Verify OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"mylab.me@gmail.com\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/staff-auth/verify-otp",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "staff-auth",
+                "verify-otp"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"mylab.me@gmail.com\",\n  \"otp\": \"123456\",\n  \"new_password\": \"securepassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/staff-auth/reset-password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "staff-auth",
+                "reset-password"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"admin_username\": \"superadmin\",\n  \"admin_password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Staff Core",
+      "item": [
+        {
+          "name": "Create Staff",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fname\": \"John\",\n  \"lname\": \"Doe\",\n  \"phone_number\": \"+1234567890\",\n  \"status\": \"active\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/staff",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "staff"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Staff",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/staff",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "staff"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Staff By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/staff/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "staff",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Staff",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fname\": \"Jane\",\n  \"status\": \"inactive\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/staff/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "staff",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Staff",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/staff/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "staff",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Staff Credentials",
+      "item": [
+        {
+          "name": "Create Credential",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"staff@example.com\",\n  \"staff_password\": \"SecurePass1!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/staff/:id/credential",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "staff",
+                ":id",
+                "credential"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Credential",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/staff/:id/credential",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "staff",
+                ":id",
+                "credential"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Credential",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"new_staff@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/staff/:id/credential",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "staff",
+                ":id",
+                "credential"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Credential",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/staff/:id/credential",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "staff",
+                ":id",
+                "credential"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Staff Roles",
+      "item": [
+        {
+          "name": "Assign Roles",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role_ids\": [1, 2]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/staff/:staff_id/role",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "staff",
+                ":staff_id",
+                "role"
+              ],
+              "variable": [
+                {
+                  "key": "staff_id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Roles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/staff/:staff_id/role",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "staff",
+                ":staff_id",
+                "role"
+              ],
+              "variable": [
+                {
+                  "key": "staff_id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Remove Role",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/staff/:staff_id/role/:role_id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "staff",
+                ":staff_id",
+                "role",
+                ":role_id"
+              ],
+              "variable": [
+                {
+                  "key": "staff_id",
+                  "value": "1"
+                },
+                {
+                  "key": "role_id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Customer",
+      "item": [
+        {
+          "name": "Create Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fname\": \"John\",\n  \"lname\": \"Doe\",\n  \"phone_number\": \"1234567890\",\n  \"address_line_1\": \"123 Main St\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/customer",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "customer"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Customers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/customer",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "customer"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Customer By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/customer/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "customer",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Customer",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fname\": \"Jane\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/customer/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "customer",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Customer",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/customer/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "customer",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Role",
+      "item": [
+        {
+          "name": "Read All Permissions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/role/permissions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "role",
+                "permissions"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Role",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"Manager\",\n  \"description\": \"Store Manager\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/role",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "role"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Roles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/role",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "role"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Role",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/role/search?query=Manager",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "role",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "Manager"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Role By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/role/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "role",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Role",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Updated Description\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/role/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "role",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Role",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/role/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "role",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Role Permissions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/role/:id/permissions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "role",
+                ":id",
+                "permissions"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Assign Permissions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"permissionIds\": [1, 2]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/role/:id/permissions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "role",
+                ":id",
+                "permissions"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Remove Permissions",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"permissionIds\": [1]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/role/:id/permissions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "role",
+                ":id",
+                "permissions"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Settings",
+      "item": [
+        {
+          "name": "Create Setting",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"delivery_radius\": 10,\n  \"latitude\": 40.7128,\n  \"longitude\": -74.0060,\n  \"delivery_fee\": 5.99\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/settings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "settings"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Setting",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/settings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "settings"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Setting",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"delivery_fee\": 6.99\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/settings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "settings"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

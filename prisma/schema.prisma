@@ -309,3 +309,11 @@ model admin {
   created_at     DateTime @default(now())
 }
 
+model password_reset_otp {
+  id        Int      @id @default(autoincrement())
+  email     String
+  otp       String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
