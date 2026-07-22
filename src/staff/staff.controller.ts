@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Get, Param, Patch, Delete, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { StaffService } from './staff.service';
-import { AdminJwtAuthGuard } from 'src/admin-auth/guards/admin-jwt-auth.guard';
+import { AdminJwtAuthGuard } from '../admin-auth/guards/admin-jwt-auth.guard';
 import { CreateStaffWithCredentialDto } from './dto/create-staff-with-cred-dto';
 import { UpdateStaffCredentialDto } from './dto/update-staff-credential.dto';
 import { UpdateStaffWithCredentialDto } from './dto/update-staff-with-cred-dto';
