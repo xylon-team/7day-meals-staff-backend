@@ -27,12 +27,37 @@ export class StaffService {
 
   //READ
   async findAll() {
-    return this.prisma.staff.findMany();
+    return this.prisma.staff.findMany({
+      include: {
+        credential: {
+          select: {
+            email: true,
+          },
+        },
+        staff_roles: {
+          include: {
+            role: true,
+          },
+        },
+      },
+    });
   }
 
   async findOne(id: number) {
     const staff = await this.prisma.staff.findUnique({
       where: { staff_id: id },
+      include: {
+        credential: {
+          select: {
+            email: true,
+          },
+        },
+        staff_roles: {
+          include: {
+            role: true,
+          },
+        },
+      },
     });
     if (!staff) {
       throw new NotFoundException(`Staff with id ${id} not found`);
