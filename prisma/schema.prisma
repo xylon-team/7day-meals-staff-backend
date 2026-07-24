@@ -170,9 +170,10 @@ model staff {
 model staff_credential {
   staff_credential_id Int      @id @default(autoincrement())
   staff_id            Int      @unique
-  staff               staff    @relation(fields: [staff_id], references: [staff_id])
-  email               String
+  staff               staff    @relation(fields: [staff_id], references: [staff_id], onDelete: Cascade)
+  email               String   @unique
   staff_password      String
+  token_version      Int      @default(0)
 }
 
 model role {
@@ -193,8 +194,8 @@ model staff_role {
   staff_id Int
   role_id  Int
 
-  staff staff @relation(fields: [staff_id], references: [staff_id])
-  role  role  @relation(fields: [role_id], references: [role_id])
+  staff staff @relation(fields: [staff_id], references: [staff_id], onDelete: Cascade)
+  role  role  @relation(fields: [role_id], references: [role_id], onDelete: Cascade)
 
   @@id([staff_id, role_id])
 }
@@ -203,7 +204,7 @@ model role_permission {
   role_id       Int
   permission_id Int
 
-  role       role       @relation(fields: [role_id], references: [role_id])
+  role       role       @relation(fields: [role_id], references: [role_id], onDelete: Cascade)
   permission permission @relation(fields: [permission_id], references: [permission_id])
 
   @@id([role_id, permission_id])
@@ -306,5 +307,13 @@ model admin {
   admin_password String
   last_logged_in DateTime?
   created_at     DateTime @default(now())
+}
+
+model password_reset_otp {
+  id        Int      @id @default(autoincrement())
+  email     String
+  otp       String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 }
 

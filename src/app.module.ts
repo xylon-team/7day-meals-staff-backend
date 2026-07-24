@@ -5,6 +5,11 @@ import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { CustomerModule } from './customer/customer.module';
 import { AdminAuthModule } from './admin-auth/admin-auth.module';
+import { StaffAuthModule } from './staff-auth/staff-auth.module';
+import { StaffModule } from './staff/staff.module';
+import { SettingModule } from './settings/setting.module';
+import { RoleModule } from './role/role.module';
+import { StatModule } from './stats/stat.module';
 
 @Module({
   imports: [
@@ -14,6 +19,11 @@ import { AdminAuthModule } from './admin-auth/admin-auth.module';
     PrismaModule,
     CustomerModule,
     AdminAuthModule,
+    StaffAuthModule,
+    StaffModule,
+    SettingModule,
+    RoleModule,
+    StatModule
   ],
   controllers: [AppController],
   providers: [AppService],
