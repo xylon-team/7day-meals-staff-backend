@@ -63,6 +63,8 @@ model food_item {
   item_name         String
   ingredient_list   String
   image_path        String?
+  is_available      Boolean  @default(true)
+  price             Decimal
   meal_plans        meal_plan_food_item[]
 }
 
