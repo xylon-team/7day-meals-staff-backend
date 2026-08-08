@@ -10,6 +10,7 @@ import { StaffModule } from './staff/staff.module';
 import { SettingModule } from './settings/setting.module';
 import { RoleModule } from './role/role.module';
 import { StatModule } from './stats/stat.module';
+import { FoodItemModule } from './food-item/food-item.module';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { StatModule } from './stats/stat.module';
     StaffModule,
     SettingModule,
     RoleModule,
-    StatModule
+    StatModule,
+    FoodItemModule
   ],
   controllers: [AppController],
   providers: [AppService],
