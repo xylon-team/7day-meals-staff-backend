@@ -11,6 +11,7 @@ import { RequirePermissions } from '../staff-auth/decorators/permissions.decorat
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
+  //GET ALL ORDERS ENDPOINT (SUPPORTS FILTERS)
   @Get()
   @RequirePermissions('orders_view')
   findAll(
@@ -33,9 +34,21 @@ export class OrderController {
     });
   }
 
+  //GET ORDER BY ID ENDPOINT
   @Get(':id')
   @RequirePermissions('orders_view')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.orderService.findOne(id);
   }
+
+  //UPDATE ORDER ENDPOINT
+  @Patch(':id')
+  @RequirePermissions('orders_change')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateOrderDto: UpdateOrderDto,
+  ) {
+    return this.orderService.update(id, updateOrderDto);
+  }
+
 }

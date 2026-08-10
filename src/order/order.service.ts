@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
@@ -7,6 +7,7 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 export class OrderService {
   constructor(private prisma: PrismaService) {}
 
+  //GET ALL ORDERS (CAN BE FILTERED)
   async findAll(filters: {
     customer_id?: number;
     meal_id?: number;
@@ -29,6 +30,7 @@ export class OrderService {
     });
   }
 
+  //GET SPECIFIC ORDER
   async findOne(id: number) {
     const order = await this.prisma.customer_order.findUnique({
       where: { order_id: id },
@@ -38,4 +40,26 @@ export class OrderService {
     }
     return order;
   }
+
+  //UPDATE ORDER
+  async update(id: number, updateOrderDto: UpdateOrderDto) {
+    const order = await this.prisma.customer_order.findUnique({
+      where: { order_id: id },
+    });
+    if (!order) {
+      throw new NotFoundException(`Order with ID ${id} not found`);
+    }
+    try {
+      return await this.prisma.customer_order.update({
+        where: { order_id: id },
+        data: updateOrderDto,
+      });
+    } catch (error) {
+      if (error instanceof Error && 'code' in error && error.code === 'P2003') {
+        throw new BadRequestException('One or more referenced records not found');
+      }
+      throw error;
+    }
+  }
+
 }
