@@ -23,6 +23,12 @@ export class FoodItemService {
     return await this.prisma.food_item.findMany();
   }
 
+  async findAllAvailable() {
+    return await this.prisma.food_item.findMany({
+      where: { is_available: true },
+    });
+  }
+  
   async findOne(id: number) {
     const foodItem = await this.prisma.food_item.findUnique({
       where: { food_item_id: id },
