@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Patch, Delete, Param, Body, UseGuards, ParseIntPipe } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Delete, Param, Body, UseGuards, ParseIntPipe, Query } from '@nestjs/common';
 import { FoodItemService } from './food-item.service';
 import { CreateFoodItemDto } from './dto/create-food-item.dto';
 import { UpdateFoodItemDto } from './dto/update-food-item.dto';
@@ -19,8 +19,24 @@ export class FoodItemController {
 
   @Get()
   @RequirePermissions('meal_item_view')
-  findAll() {
-    return this.foodItemService.findAll();
+  findAll(
+    @Query('item_name') itemName?: string,
+    @Query('ingredient_list') ingredientList?: string | string[],
+    @Query('is_available') isAvailable?: string,
+    @Query('min_price') minPrice?: string,
+    @Query('max_price') maxPrice?: string,
+  ) {
+    const normalizedIngredientList = ingredientList
+      ? Array.isArray(ingredientList) ? ingredientList : [ingredientList]
+      : undefined;
+    
+    return this.foodItemService.findAll({
+      itemName: itemName || undefined,
+      ingredientList: normalizedIngredientList,
+      isAvailable: isAvailable === 'true' ? true : isAvailable === 'false' ? false : undefined,
+      minPrice: minPrice ? parseFloat(minPrice) : undefined,
+      maxPrice: maxPrice ? parseFloat(maxPrice) : undefined,
+    });
   }
 
   @Get(':id')
