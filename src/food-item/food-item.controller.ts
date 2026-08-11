@@ -29,6 +29,12 @@ export class FoodItemController {
     return this.foodItemService.findOne(id);
   }
 
+  @Get('available/all')
+  @RequirePermissions('meal_item_view')
+  findAllAvailable() {
+    return this.foodItemService.findAllAvailable();
+  }
+
   @Patch(':id')
   @RequirePermissions('meal_item_change')
   update(
