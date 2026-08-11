@@ -14,7 +14,7 @@ async function bootstrap() {
   });
   
   // Enable global validation pipe to automatically validate incoming request data
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   await app.listen(configService.get<number>('PORT', 3000));
 }
 bootstrap();
