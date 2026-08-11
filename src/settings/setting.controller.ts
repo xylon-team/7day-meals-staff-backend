@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch } from '@nestjs/common';
 import { SettingService } from './setting.service';
-import { AdminJwtAuthGuard } from 'src/admin-auth/guards/admin-jwt-auth.guard';
+import { AdminJwtAuthGuard } from '../admin-auth/guards/admin-jwt-auth.guard';
 import { UseGuards } from '@nestjs/common';
 import { CreateSettingDto } from './dto/create_setting.dto';
 import { UpdateSettingDto } from './dto/update_setting.dto';

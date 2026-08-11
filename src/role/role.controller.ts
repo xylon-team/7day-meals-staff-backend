@@ -3,7 +3,7 @@ import { RoleService } from './role.service';
 import { CreateRoleDto } from './dto/create_role.dto';
 import { UpdateRoleDto } from './dto/update_role.dto';
 import { SearchRoleDto } from './dto/search.dto';
-import { AdminJwtAuthGuard } from 'src/admin-auth/guards/admin-jwt-auth.guard';
+import { AdminJwtAuthGuard } from '../admin-auth/guards/admin-jwt-auth.guard';
 
 @Controller('role')
 @UseGuards(AdminJwtAuthGuard)
