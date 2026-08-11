@@ -19,10 +19,39 @@ export class FoodItemService {
     });
   }
 
-  async findAll() {
-    return await this.prisma.food_item.findMany();
+  async findAll(filters?: {
+    itemName?: string;
+    ingredientList?: string[];
+    isAvailable?: boolean;
+    minPrice?: number;
+    maxPrice?: number;
+  }) {
+    return await this.prisma.food_item.findMany({
+      where: {
+        ...(filters?.itemName && { item_name: { contains: filters.itemName, mode: 'insensitive' } }),
+        ...(filters?.ingredientList?.length && {
+          OR: filters.ingredientList.map(ingredient => ({
+            ingredient_list: { contains: ingredient, mode: 'insensitive' }
+          }))
+        }),
+        ...(filters?.isAvailable !== undefined && { is_available: filters.isAvailable }),
+        ...((filters?.minPrice !== undefined || filters?.maxPrice !== undefined) && {
+          price: {
+            ...(filters?.minPrice !== undefined && { gte: filters.minPrice }),
+            ...(filters?.maxPrice !== undefined && { lte: filters.maxPrice }),
+          }
+        }),
+      },
+    });
   }
 
+  //note to me (Hiruna) : remove this. this is redundant
+  async findAllAvailable() {
+    return await this.prisma.food_item.findMany({
+      where: { is_available: true },
+    });
+  }
+  
   async findOne(id: number) {
     const foodItem = await this.prisma.food_item.findUnique({
       where: { food_item_id: id },

@@ -12,6 +12,7 @@ import { RoleModule } from './role/role.module';
 import { StatModule } from './stats/stat.module';
 import { FoodItemModule } from './food-item/food-item.module';
 import { MealPlanModule } from './meal-plan/meal-plan.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { MealPlanModule } from './meal-plan/meal-plan.module';
     StatModule,
     FoodItemModule,
     MealPlanModule,
+    OrderModule
   ],
   controllers: [AppController],
   providers: [AppService],
