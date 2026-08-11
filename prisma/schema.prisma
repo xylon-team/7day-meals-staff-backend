@@ -77,7 +77,7 @@ model meal_plan_food_item {
   meal_plan    meal_plan   @relation(fields: [meal_id], references: [meal_id])
   food_item    food_item   @relation(fields: [food_item_id], references: [food_item_id])
 
-  @@id([meal_id, food_item_id])
+  @@id([meal_id, food_item_id, day, meal_type])
 }
 
 model delivery_person {

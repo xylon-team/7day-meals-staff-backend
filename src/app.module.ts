@@ -11,6 +11,7 @@ import { SettingModule } from './settings/setting.module';
 import { RoleModule } from './role/role.module';
 import { StatModule } from './stats/stat.module';
 import { FoodItemModule } from './food-item/food-item.module';
+import { MealPlanModule } from './meal-plan/meal-plan.module';
 
 @Module({
   imports: [
@@ -25,7 +26,8 @@ import { FoodItemModule } from './food-item/food-item.module';
     SettingModule,
     RoleModule,
     StatModule,
-    FoodItemModule
+    FoodItemModule,
+    MealPlanModule,
   ],
   controllers: [AppController],
   providers: [AppService],
