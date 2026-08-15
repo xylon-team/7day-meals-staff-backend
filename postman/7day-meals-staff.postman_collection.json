@@ -1025,6 +1025,52 @@
       "name": "Order",
       "item": [
         {
+          "name": "Fetch All Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/order",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "order"
+              ],
+              "query": [
+                {
+                  "key": "order_status",
+                  "value": "preparing",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Fetch Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/order/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "order",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
           "name": "Update Order Status",
           "request": {
             "method": "PATCH",
