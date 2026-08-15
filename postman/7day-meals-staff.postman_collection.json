@@ -50,6 +50,32 @@
       "name": "Staff Auth",
       "item": [
         {
+          "name": "Staff Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"staff@example.com\",\n  \"staff_password\": \"SecurePass1!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/staff-auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "staff-auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
           "name": "Forgot Password",
           "request": {
             "method": "POST",
@@ -937,6 +963,58 @@
               ],
               "path": [
                 "settings"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Meal Plan",
+      "item": [
+        {
+          "name": "Deactivate Meal Plan",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/meal-plan/:id/deactivate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "meal-plan",
+                ":id",
+                "deactivate"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Meal Plan",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/meal-plan/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "meal-plan",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
               ]
             }
           }

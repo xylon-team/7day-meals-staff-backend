@@ -37,4 +37,16 @@ export class MealPlanController {
   ) {
     return this.mealPlanService.update(id, body.mealPlan, body.foodItems);
   }
+
+  @Patch(':id/deactivate')
+  @RequirePermissions('meal_package_change')
+  deactivate(@Param('id', ParseIntPipe) id: number) {
+    return this.mealPlanService.deactivate(id);
+  }
+
+  @Delete(':id')
+  @RequirePermissions('meal_package_delete')
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.mealPlanService.remove(id);
+  }
 }
