@@ -171,4 +171,37 @@ export class MealPlanService {
     });
   }
 
+  async deactivate(id: number) {
+    await this.findOne(id); // Check if exists and throws NotFoundException if not
+
+    return await this.prisma.meal_plan.update({
+      where: { meal_id: id },
+      data: {
+        is_available: false,
+      },
+    });
+  }
+
+  async remove(id: number) {
+    await this.findOne(id); // Check if exists and throws NotFoundException if not
+
+    return await this.prisma.$transaction(async (tx) => {
+      // First delete meal_plan_food_item associations
+      await tx.meal_plan_food_item.deleteMany({
+        where: { meal_id: id },
+      });
+
+      // Attempt to delete meal plan (will throw error if linked to orders/subscriptions)
+      try {
+        return await tx.meal_plan.delete({
+          where: { meal_id: id },
+        });
+      } catch (error: any) {
+        if (error.code === 'P2003') {
+          throw new ConflictException('Cannot delete meal plan because it is linked to existing orders or subscriptions');
+        }
+        throw error;
+      }
+    });
+  }
 }
