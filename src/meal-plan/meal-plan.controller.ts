@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards, Query } from '@nestjs/common';
 import { MealPlanService } from './meal-plan.service';
 import { CreateMealPlanBodyDto } from './dto/create-meal-plan-body.dto';
 import { UpdateMealPlanBodyDto } from './dto/update-meal-plan-body.dto';
@@ -20,8 +20,11 @@ export class MealPlanController {
 
   @Get()
   @RequirePermissions('meal_package_view')
-  findAll() {
-    return this.mealPlanService.findAll();
+  findAll(
+    @Query('sort_by') sort_by?: string,
+    @Query('sort_order') sort_order?: 'asc' | 'desc',
+  ) {
+    return this.mealPlanService.findAll(sort_by, sort_order);
   }
 
   @Get(':id')
