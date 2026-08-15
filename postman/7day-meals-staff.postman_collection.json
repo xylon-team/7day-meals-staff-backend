@@ -973,6 +973,34 @@
       "name": "Meal Plan",
       "item": [
         {
+          "name": "Fetch All Meal Plans",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/meal-plan?sort_by=price&sort_order=desc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "meal-plan"
+              ],
+              "query": [
+                {
+                  "key": "sort_by",
+                  "value": "price",
+                  "disabled": false
+                },
+                {
+                  "key": "sort_order",
+                  "value": "desc",
+                  "disabled": false
+                }
+              ]
+            }
+          }
+        },
+        {
           "name": "Update Meal Plan Status",
           "request": {
             "method": "PATCH",

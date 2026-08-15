@@ -64,8 +64,17 @@ export class MealPlanService {
   });
 }
 
-  async findAll() {
+  async findAll(sort_by?: string, sort_order?: 'asc' | 'desc') {
+    const validSortFields = ['meal_id', 'item_name', 'category', 'price', 'is_available'];
+    const orderBy: any = {};
+    if (sort_by && validSortFields.includes(sort_by)) {
+      orderBy[sort_by] = sort_order === 'desc' ? 'desc' : 'asc';
+    } else {
+      orderBy['meal_id'] = 'asc'; // Default sort
+    }
+
     return await this.prisma.meal_plan.findMany({
+      orderBy,
       include: {
         food_items: {
           include: {
