@@ -61,7 +61,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"staff@example.com\",\n  \"staff_password\": \"SecurePass1!\"\n}"
+              "raw": "{\n  \"email\": \"denura@gmail.com\",\n  \"staff_password\": \"Denura@1000\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/staff-auth/login",
@@ -972,6 +972,39 @@
     {
       "name": "Meal Plan",
       "item": [
+        {
+          "name": "Update Meal Plan Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_available\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/meal-plan/:id/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "meal-plan",
+                ":id",
+                "status"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
         {
           "name": "Deactivate Meal Plan",
           "request": {
