@@ -973,6 +973,86 @@
       "name": "Meal Plan",
       "item": [
         {
+          "name": "Create Meal Plan",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mealPlan\": {\n    \"item_name\": \"Healthy Salad Package\",\n    \"category\": \"Vegetarian\",\n    \"description\": \"Fresh and organic\",\n    \"dietary_preference\": \"veg\",\n    \"price\": 15.99,\n    \"image_path\": \"\",\n    \"is_available\": true\n  },\n  \"foodItems\": [\n    {\n      \"food_item_id\": 1,\n      \"day\": \"monday\",\n      \"meal_type\": \"lunch\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/meal-plan",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "meal-plan"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Meal Plan",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mealPlan\": {\n    \"item_name\": \"Updated Salad Package\",\n    \"price\": 16.99\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/meal-plan/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "meal-plan",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Fetch Meal Plan by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/meal-plan/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "meal-plan",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
           "name": "Fetch All Meal Plans",
           "request": {
             "method": "GET",
