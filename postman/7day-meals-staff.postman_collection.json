@@ -1020,6 +1020,44 @@
           }
         }
       ]
+    },
+    {
+      "name": "Order",
+      "item": [
+        {
+          "name": "Update Order Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_status\": \"preparing\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/order/:id/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "order",
+                ":id",
+                "status"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        }
+      ]
     }
   ]
 }
