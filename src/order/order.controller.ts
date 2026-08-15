@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGua
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { StaffJwtAuthGuard } from '../staff-auth/guards/staff-auth.guard';
 import { PermissionsGuard } from '../staff-auth/guards/permissions.guard';
 import { RequirePermissions } from '../staff-auth/decorators/permissions.decorator';
@@ -49,6 +50,16 @@ export class OrderController {
     @Body() updateOrderDto: UpdateOrderDto,
   ) {
     return this.orderService.update(id, updateOrderDto);
+  }
+
+  //UPDATE ORDER STATUS ENDPOINT
+  @Patch(':id/status')
+  @RequirePermissions('orders_change')
+  updateStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateOrderStatusDto: UpdateOrderStatusDto,
+  ) {
+    return this.orderService.updateStatus(id, updateOrderStatusDto.order_status);
   }
 
 }
