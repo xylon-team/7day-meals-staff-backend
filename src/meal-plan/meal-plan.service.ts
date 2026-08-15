@@ -182,6 +182,17 @@ export class MealPlanService {
     });
   }
 
+  async updateStatus(id: number, isAvailable: boolean) {
+    await this.findOne(id); // Check if exists and throws NotFoundException if not
+
+    return await this.prisma.meal_plan.update({
+      where: { meal_id: id },
+      data: {
+        is_available: isAvailable,
+      },
+    });
+  }
+
   async remove(id: number) {
     await this.findOne(id); // Check if exists and throws NotFoundException if not
 
