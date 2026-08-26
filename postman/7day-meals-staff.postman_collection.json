@@ -50,6 +50,32 @@
       "name": "Staff Auth",
       "item": [
         {
+          "name": "Staff Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"denura@gmail.com\",\n  \"staff_password\": \"Denura@1000\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/staff-auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "staff-auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
           "name": "Forgot Password",
           "request": {
             "method": "POST",
@@ -937,6 +963,283 @@
               ],
               "path": [
                 "settings"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Meal Plan",
+      "item": [
+        {
+          "name": "Create Meal Plan",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mealPlan\": {\n    \"item_name\": \"Healthy Salad Package\",\n    \"category\": \"Vegetarian\",\n    \"description\": \"Fresh and organic\",\n    \"dietary_preference\": \"veg\",\n    \"price\": 15.99,\n    \"image_path\": \"\",\n    \"is_available\": true\n  },\n  \"foodItems\": [\n    {\n      \"food_item_id\": 1,\n      \"day\": \"monday\",\n      \"meal_type\": \"lunch\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/meal-plan",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "meal-plan"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Meal Plan",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mealPlan\": {\n    \"item_name\": \"Updated Salad Package\",\n    \"price\": 16.99\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/meal-plan/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "meal-plan",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Fetch Meal Plan by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/meal-plan/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "meal-plan",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Fetch All Meal Plans",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/meal-plan?sort_by=price&sort_order=desc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "meal-plan"
+              ],
+              "query": [
+                {
+                  "key": "sort_by",
+                  "value": "price",
+                  "disabled": false
+                },
+                {
+                  "key": "sort_order",
+                  "value": "desc",
+                  "disabled": false
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Meal Plan Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_available\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/meal-plan/:id/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "meal-plan",
+                ":id",
+                "status"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Deactivate Meal Plan",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/meal-plan/:id/deactivate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "meal-plan",
+                ":id",
+                "deactivate"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Meal Plan",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/meal-plan/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "meal-plan",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Order",
+      "item": [
+        {
+          "name": "Fetch All Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/order",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "order"
+              ],
+              "query": [
+                {
+                  "key": "order_status",
+                  "value": "preparing",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Fetch Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/order/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "order",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Order Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_status\": \"preparing\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/order/:id/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "order",
+                ":id",
+                "status"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
               ]
             }
           }

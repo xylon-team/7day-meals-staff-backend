@@ -64,8 +64,17 @@ export class MealPlanService {
   });
 }
 
-  async findAll() {
+  async findAll(sort_by?: string, sort_order?: 'asc' | 'desc') {
+    const validSortFields = ['meal_id', 'item_name', 'category', 'price', 'is_available'];
+    const orderBy: any = {};
+    if (sort_by && validSortFields.includes(sort_by)) {
+      orderBy[sort_by] = sort_order === 'desc' ? 'desc' : 'asc';
+    } else {
+      orderBy['meal_id'] = 'asc'; // Default sort
+    }
+
     return await this.prisma.meal_plan.findMany({
+      orderBy,
       include: {
         food_items: {
           include: {
@@ -171,4 +180,48 @@ export class MealPlanService {
     });
   }
 
+  async deactivate(id: number) {
+    await this.findOne(id); // Check if exists and throws NotFoundException if not
+
+    return await this.prisma.meal_plan.update({
+      where: { meal_id: id },
+      data: {
+        is_available: false,
+      },
+    });
+  }
+
+  async updateStatus(id: number, isAvailable: boolean) {
+    await this.findOne(id); // Check if exists and throws NotFoundException if not
+
+    return await this.prisma.meal_plan.update({
+      where: { meal_id: id },
+      data: {
+        is_available: isAvailable,
+      },
+    });
+  }
+
+  async remove(id: number) {
+    await this.findOne(id); // Check if exists and throws NotFoundException if not
+
+    return await this.prisma.$transaction(async (tx) => {
+      // First delete meal_plan_food_item associations
+      await tx.meal_plan_food_item.deleteMany({
+        where: { meal_id: id },
+      });
+
+      // Attempt to delete meal plan (will throw error if linked to orders/subscriptions)
+      try {
+        return await tx.meal_plan.delete({
+          where: { meal_id: id },
+        });
+      } catch (error: any) {
+        if (error.code === 'P2003') {
+          throw new ConflictException('Cannot delete meal plan because it is linked to existing orders or subscriptions');
+        }
+        throw error;
+      }
+    });
+  }
 }
