@@ -28,6 +28,7 @@ model customer {
   address_line_2   String?
   is_active        Boolean  @default(true)
   is_deleted       Boolean  @default(false)
+  is_recovery_requested Boolean @default(false)
   delete_timestamp DateTime?
   registration_date DateTime @default(now())
   credential         customer_credential?
