@@ -134,6 +134,7 @@ model subscription {
   subscribe_date            DateTime @default(now())
   canceled_date            DateTime?
   delivery_preferred_date  DateTime
+  next_delivery_date       DateTime?
 
   customer    customer  @relation(fields: [customer_id], references: [customer_id])
   meal_plan   meal_plan @relation(fields: [meal_id], references: [meal_id])
