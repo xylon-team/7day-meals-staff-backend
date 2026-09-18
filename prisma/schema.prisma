@@ -35,6 +35,22 @@ model customer {
   orders             customer_order[]
   subscriptions      subscription[]
   complaints         complaint[]
+  notifications      notification[]
+}
+
+model notification {
+  notif_id    Int      @id @default(autoincrement())
+  customer_id Int
+  title       String   @db.VarChar(200)
+  message     String   @db.Text
+  type        String
+  created_at  DateTime @default(now())
+  read_at     DateTime?
+
+  customer customer @relation(fields: [customer_id], references: [customer_id])
+
+  @@index([customer_id, created_at])
+  @@index([customer_id, read_at])
 }
 
 model customer_credential {
