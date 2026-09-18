@@ -101,11 +101,13 @@ model customer_order {
   delivery_preferred_date DateTime
   is_a_subscribed_meal    Boolean           @default(false)
   offer_id                Int?
+  subscription_id         Int?
 
   customer          customer         @relation(fields: [customer_id], references: [customer_id])
   meal_plan         meal_plan        @relation(fields: [meal_id], references: [meal_id])
   delivery_person   delivery_person? @relation(fields: [delivery_person_id], references: [delivery_person_id])
   offer             offer?           @relation(fields: [offer_id], references: [offer_id])
+  subscription      subscription?    @relation(fields: [subscription_id], references: [subscription_id], onDelete: SetNull)
   feedback          delivery_feedback[]
 }
 
@@ -119,6 +121,7 @@ model subscription {
 
   customer    customer  @relation(fields: [customer_id], references: [customer_id])
   meal_plan   meal_plan @relation(fields: [meal_id], references: [meal_id])
+  orders      customer_order[]
 }
 
 model delivery_feedback {
