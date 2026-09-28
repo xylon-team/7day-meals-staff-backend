@@ -1,4 +1,4 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { PrismaService } from '../../prisma/prisma.service';
 import { PERMISSIONS_KEY } from '../decorators/permissions.decorator';
@@ -20,7 +20,7 @@ export class PermissionsGuard implements CanActivate {
     const { user } = context.switchToHttp().getRequest();
 
     if (!user || !user.staffId) {
-      throw new ForbiddenException('User not authenticated properly');
+      throw new UnauthorizedException('User not authenticated properly');
     }
 
     const staffRoles = await this.prisma.staff_role.findMany({
