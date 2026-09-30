@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { StaffJwtAuthGuard } from '../staff-auth/guards/staff-auth.guard';
 import { PermissionsGuard } from '../staff-auth/guards/permissions.guard';
 import { RequirePermissions } from '../staff-auth/decorators/permissions.decorator';
@@ -11,7 +11,7 @@ export class SupplierController {
 
   @Get()
   @RequirePermissions('supplier_view')
-  findAll() {
-    return this.supplierService.findAll();
+  findAll(@Query('search') search?: string) {
+    return this.supplierService.findAll(search);
   }
 }
