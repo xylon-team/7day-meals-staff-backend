@@ -179,6 +179,16 @@ model complaint {
   customer         customer @relation(fields: [customer_id], references: [customer_id])
 }
 
+model inquiry {
+  inquiry_id     Int      @id @default(autoincrement())
+  title          String   @db.VarChar(200)
+  message        String   @db.Text
+  sender_email   String   @db.VarChar(254)
+  date_submitted DateTime @default(now())
+
+  @@index([date_submitted])
+}
+
 model staff {
   staff_id     Int     @id @default(autoincrement())
   fname        String
