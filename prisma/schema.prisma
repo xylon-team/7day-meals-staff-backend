@@ -236,6 +236,7 @@ model role_permission {
 
 model supplier {
   supplier_id   Int     @id @default(autoincrement())
+  is_active     Boolean @default(true)
   name          String
   agent_name    String
   email         String
