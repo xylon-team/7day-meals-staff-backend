@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { InventoryDashboardDto } from './dto/inventory-dashboard-response.dto';
 
 @Injectable()
 export class StatService {
@@ -124,4 +125,53 @@ export class StatService {
       errors,
     };
   }
-}
+
+  async getInventoryDashboardSummary(): Promise<InventoryDashboardDto> {
+    const [inventoryStats] = await this.prisma.$queryRaw<
+      Array<{
+        total_inventory_items: bigint;
+        low_stock_items: bigint;
+        out_of_stock_items: bigint;
+      }>
+    >`
+      SELECT
+        COUNT(*) AS total_inventory_items,
+        COUNT(*) FILTER (
+          WHERE current_quantity <= low_stock_level AND is_out_of_stock = false
+        ) AS low_stock_items,
+        COUNT(*) FILTER (WHERE is_out_of_stock = true) AS out_of_stock_items
+      FROM inventory_item
+    `;
+
+    const [total_suppliers, pending_supplier_requests, recent_inventory_updates] =
+      await Promise.all([
+        this.prisma.supplier.count(),
+        this.prisma.supplier_request.count({
+          where: { status: { equals: 'pending', mode: 'insensitive' } },
+        }),
+        this.prisma.stock_adjustment.findMany({
+          take: 5,
+          orderBy: { entered_date: 'desc' },
+          select: {
+            stock_adjust_id: true,
+            adjustment_type: true,
+            quantity: true,
+            entered_date: true,
+            remarks: true,
+            inventory: {
+              select: { inventory_id: true, ingredient_name: true },
+            },
+            staff: { select: { fname: true, lname: true } },
+          },
+        }),
+      ]);
+
+    return {
+      total_inventory_items: Number(inventoryStats?.total_inventory_items ?? 0),
+      total_suppliers,
+      low_stock_items: Number(inventoryStats?.low_stock_items ?? 0),
+      out_of_stock_items: Number(inventoryStats?.out_of_stock_items ?? 0),
+      pending_supplier_requests,
+      recent_inventory_updates,
+    };
+  }}
