@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CustomerService } from './customer.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 describe('CustomerService', () => {
   let service: CustomerService;
@@ -57,5 +58,55 @@ describe('CustomerService', () => {
   it('propagates database failures instead of returning an empty directory', async () => {
     customer.findMany.mockRejectedValue(new Error('Database unavailable'));
     await expect(service.findAll()).rejects.toThrow('Database unavailable');
+  });
+
+  // ============= Customer Profile =============
+  it('returns a full customer profile with email and audit fields', async () => {
+    const profile = {
+      customer_id: 1,
+      fname: 'Jane',
+      lname: 'Doe',
+      phone_number: '0771234567',
+      address_line_1: '10 Main Street',
+      address_line_2: null,
+      latitude: null,
+      longitude: null,
+      registration_date: new Date('2026-01-01T00:00:00Z'),
+      is_active: false,
+      is_deleted: true,
+      is_recovery_requested: true,
+      delete_timestamp: new Date('2026-02-01T00:00:00Z'),
+      credential: { email: 'jane@example.com' },
+    };
+    customer.findUnique.mockResolvedValue(profile);
+    expect(await service.findOne(1)).toEqual(profile);
+    expect(customer.findUnique).toHaveBeenCalledWith({
+      where: { customer_id: 1 },
+      include: { credential: { select: { email: true } } },
+    });
+  });
+
+  it('supports a customer without credentials', async () => {
+    const profile = { customer_id: 1, credential: null };
+    customer.findUnique.mockResolvedValue(profile);
+    expect(await service.findOne(1)).toEqual(profile);
+  });
+
+  it('throws 404 when the customer does not exist', async () => {
+    customer.findUnique.mockResolvedValue(null);
+    await expect(service.findOne(999)).rejects.toThrow(NotFoundException);
+  });
+
+  it.each([0, -1, 1.5, NaN, Infinity, 2147483648])(
+    'rejects invalid customer ID %s before querying the database',
+    async (id) => {
+      await expect(service.findOne(id)).rejects.toThrow(BadRequestException);
+      expect(customer.findUnique).not.toHaveBeenCalled();
+    },
+  );
+
+  it('propagates database failures instead of reporting a missing customer', async () => {
+    customer.findUnique.mockRejectedValue(new Error('Database unavailable'));
+    await expect(service.findOne(1)).rejects.toThrow('Database unavailable');
   });
 });
