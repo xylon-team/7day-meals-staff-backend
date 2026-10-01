@@ -23,7 +23,9 @@ export class CustomerController {
     return this.customerService.create(createCustomerDto);
   }
 
+  // ============= Customer Directory =============
   @Get()
+  @UseGuards(AdminJwtAuthGuard)
   findAll() {
     return this.customerService.findAll();
   }
@@ -34,7 +36,10 @@ export class CustomerController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCustomerDto: UpdateCustomerDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateCustomerDto: UpdateCustomerDto,
+  ) {
     return this.customerService.update(+id, updateCustomerDto);
   }
 

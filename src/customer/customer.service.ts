@@ -11,8 +11,13 @@ export class CustomerService {
     return 'This action adds a new customer';
   }
 
+  // ============= Customer Directory =============
   findAll() {
-    return `This action returns all customer`;
+    // Include all account statuses for auditing, but expose only email from credentials.
+    return this.prisma.customer.findMany({
+      include: { credential: { select: { email: true } } },
+      orderBy: [{ registration_date: 'desc' }, { customer_id: 'desc' }],
+    });
   }
 
   findOne(id: number) {
