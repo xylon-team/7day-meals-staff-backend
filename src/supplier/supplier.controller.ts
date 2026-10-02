@@ -1,13 +1,22 @@
-import { Controller, Get, Param, ParseIntPipe, Patch, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { StaffJwtAuthGuard } from '../staff-auth/guards/staff-auth.guard';
 import { PermissionsGuard } from '../staff-auth/guards/permissions.guard';
 import { RequirePermissions } from '../staff-auth/decorators/permissions.decorator';
 import { SupplierService } from './supplier.service';
+import { CreateSupplierDto } from './dto/create-supplier.dto';
 
 @Controller('suppliers')
 @UseGuards(StaffJwtAuthGuard, PermissionsGuard)
 export class SupplierController {
   constructor(private readonly supplierService: SupplierService) {}
+
+  // ============= Add Supplier =============
+  @Post()
+  @RequirePermissions('supplier_add')
+  create(@Body() dto: CreateSupplierDto) {
+    // Global validation checks contact details before persistence.
+    return this.supplierService.create(dto);
+  }
 
   @Get()
   @RequirePermissions('supplier_view')
