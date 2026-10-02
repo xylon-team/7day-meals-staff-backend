@@ -1,9 +1,26 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { SupplierDetails } from './types/supplier-details';
 
 @Injectable()
 export class SupplierService {
   constructor(private readonly prisma: PrismaService) {}
+
+  // ============= Create Supplier Record =============
+  create(details: SupplierDetails) {
+    // Save contact details without requiring an inventory assignment.
+    return this.prisma.supplier.create({
+      data: {
+        name: details.name,
+        agent_name: details.agent_name,
+        email: details.email,
+        phone_number: details.phone_number,
+        address_line_1: details.address_line_1,
+        address_line_2: details.address_line_2,
+        address_line_3: details.address_line_3,
+      },
+    });
+  }
 
   findAll(search?: string) {
     const searchTerm = search?.trim();
