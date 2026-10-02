@@ -23,18 +23,25 @@ export class CustomerController {
     return this.customerService.create(createCustomerDto);
   }
 
+  // ============= Customer Directory =============
   @Get()
+  @UseGuards(AdminJwtAuthGuard)
   findAll() {
     return this.customerService.findAll();
   }
 
+  // ============= Customer Profile =============
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.customerService.findOne(+id);
+  @UseGuards(AdminJwtAuthGuard)
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.customerService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCustomerDto: UpdateCustomerDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateCustomerDto: UpdateCustomerDto,
+  ) {
     return this.customerService.update(+id, updateCustomerDto);
   }
 
