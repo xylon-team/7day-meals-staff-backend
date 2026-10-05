@@ -95,11 +95,13 @@ The API guards prevented successful protected reads in these cases, but the fron
 
 **Resolved:** Navigation now hides sections marked `adminOnly` from staff, and the Suppliers link requires `supplier_view`. Direct `/customers` and `/settings` access is Admin-only; `/suppliers` waits for staff permissions and requires `supplier_view` before mounting. Supplier add, edit/status, and delete controls are shown only with their matching permissions. Component checks passed for denied/allowed/pending supplier access, admin-only navigation, and Add Supplier visibility. A live staff-browser/database check remains unavailable because the normal Supabase endpoint could not be reached.
 
-### 5. Staff identity is displayed as generic “Staff” and the email local-part — Medium
+### 5. [DONE] Staff identity is displayed as generic “Staff” and the email local-part — Medium
 
 **Reproduction:** Sign in with either temporary role account.
 
 **Observed:** The account menu showed role `Staff` and used the email local-part as the display name, regardless of the assigned role or the staff member’s actual first/last name. The profile edit form later showed the stored name and role permissions were applied, so this is a presentation/identity mapping bug rather than a login failure.
+
+**Resolved:** Staff login now loads `/staff-auth/me` using the newly issued staff token and displays the name and all assigned role labels from that profile. The display role is stored separately from the authorization role so a staff-assigned label cannot grant admin UI access. Verified the authenticated profile request and response mapping (including multiple roles and HTTP errors), verified the store updates the identity while retaining `Staff` authorization, and passed frontend TypeScript and focused ESLint checks. A live browser/database login could not be completed because the backend currently fails during startup while resolving `AdminOrStaffAuthGuard` in `StatModule`.
 
 ### 6. “Remember me” does not control session persistence — Medium
 
