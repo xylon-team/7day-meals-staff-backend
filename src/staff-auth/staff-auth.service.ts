@@ -1,10 +1,12 @@
-import { Injectable, NotFoundException, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, UnauthorizedException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as nodemailer from 'nodemailer';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { StaffLoginRequestDto } from './dto/staff-login-request.dto';
 import { StaffLoginResponseDto } from './dto/staff-login-response.dto';
+import { UpdateOwnStaffProfileDto } from './dto/update-own-staff-profile.dto';
+import { ChangeStaffPasswordDto } from './dto/change-staff-password.dto';
 
 
 @Injectable()
@@ -61,6 +63,77 @@ export class StaffAuthService {
     return {
       access_token: this.jwtService.sign(payload),
     };
+  }
+
+  async getMyProfile(staffId: number) {
+    const staff = await this.prisma.staff.findUnique({
+      where: { staff_id: staffId },
+      include: {
+        credential: { select: { email: true } },
+        staff_roles: { include: { role: true } },
+      },
+    });
+    if (!staff) throw new NotFoundException('Staff account not found');
+    return staff;
+  }
+
+  async getMyPermissions(staffId: number): Promise<string[]> {
+    const assigned = await this.prisma.staff_role.findMany({
+      where: { staff_id: staffId },
+      include: { role: { include: { role_permissions: { include: { permission: true } } } } },
+    });
+    return [...new Set(assigned.flatMap(({ role }) =>
+      role.role_permissions.map(({ permission }) => permission.permission_type),
+    ))];
+  }
+
+  async updateMyProfile(staffId: number, dto: UpdateOwnStaffProfileDto) {
+    const { email, ...staffData } = dto;
+    if (!email && Object.keys(staffData).length === 0) {
+      throw new BadRequestException('No profile changes provided');
+    }
+    try {
+      await this.prisma.$transaction(async (tx) => {
+        if (Object.keys(staffData).length) {
+          await tx.staff.update({ where: { staff_id: staffId }, data: staffData });
+        }
+        if (email) {
+          await tx.staff_credential.update({
+            where: { staff_id: staffId },
+            data: { email, token_version: { increment: 1 } },
+          });
+        }
+      });
+    } catch (error) {
+      if (error.code === 'P2025') throw new NotFoundException('Staff account not found');
+      if (error.code === 'P2002') throw new ConflictException('Email already exists');
+      throw error;
+    }
+    const staff = await this.getMyProfile(staffId);
+    if (!email) return staff;
+    const credential = await this.prisma.staff_credential.findUnique({ where: { staff_id: staffId } });
+    if (!credential) throw new NotFoundException('Staff credentials not found');
+    return { staff, access_token: this.issueStaffToken(staffId, email, credential.token_version) };
+  }
+
+  async changeMyPassword(staffId: number, dto: ChangeStaffPasswordDto) {
+    const credential = await this.prisma.staff_credential.findUnique({ where: { staff_id: staffId } });
+    if (!credential) throw new NotFoundException('Staff credentials not found');
+    if (!(await bcrypt.compare(dto.current_password, credential.staff_password))) {
+      throw new UnauthorizedException('Current password is incorrect');
+    }
+    const updated = await this.prisma.staff_credential.update({
+      where: { staff_id: staffId },
+      data: { staff_password: await bcrypt.hash(dto.new_password, 10), token_version: { increment: 1 } },
+    });
+    return {
+      message: 'Password updated successfully',
+      access_token: this.issueStaffToken(staffId, updated.email, updated.token_version),
+    };
+  }
+
+  private issueStaffToken(staffId: number, email: string, tokenVersion: number) {
+    return this.jwtService.sign({ sub: staffId, email, token_version: tokenVersion, user_type: 'staff' });
   }
 
   async sendOtpEmail(email: string) {
