@@ -2,12 +2,12 @@ import { Controller, Post, Get, Patch, Delete, Param, Body, UseGuards, ParseIntP
 import { FoodItemService } from './food-item.service';
 import { CreateFoodItemDto } from './dto/create-food-item.dto';
 import { UpdateFoodItemDto } from './dto/update-food-item.dto';
-import { StaffJwtAuthGuard } from '../staff-auth/guards/staff-auth.guard';
+import { AdminOrStaffAuthGuard } from '../staff-auth/guards/admin-or-staff-auth.guard';
 import { PermissionsGuard } from '../staff-auth/guards/permissions.guard';
 import { RequirePermissions } from '../staff-auth/decorators/permissions.decorator';
 
 @Controller('food-items')
-@UseGuards(StaffJwtAuthGuard, PermissionsGuard)
+@UseGuards(AdminOrStaffAuthGuard, PermissionsGuard)
 export class FoodItemController {
   constructor(private readonly foodItemService: FoodItemService) {}
 

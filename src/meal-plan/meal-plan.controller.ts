@@ -5,7 +5,7 @@ import { UpdateMealPlanBodyDto } from './dto/update-meal-plan-body.dto';
 import { UpdateMealPlanStatusDto } from './dto/update-meal-plan-status.dto';
 import { PermissionsGuard } from '../staff-auth/guards/permissions.guard';
 import { RequirePermissions } from '../staff-auth/decorators/permissions.decorator';
-import { AdminOrStaffAuthGuard } from './guards/admin-or-staff-auth.guard';
+import { AdminOrStaffAuthGuard } from '../staff-auth/guards/admin-or-staff-auth.guard';
 
 @Controller('meal-plan')
 @UseGuards(AdminOrStaffAuthGuard, PermissionsGuard)

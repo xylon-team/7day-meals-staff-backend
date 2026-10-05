@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AdminJwtAuthGuard } from '../../admin-auth/guards/admin-jwt-auth.guard';
-import { StaffJwtAuthGuard } from '../../staff-auth/guards/staff-auth.guard';
+import { StaffJwtAuthGuard } from './staff-auth.guard';
 
 @Injectable()
 export class AdminOrStaffAuthGuard implements CanActivate {
