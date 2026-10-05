@@ -83,7 +83,7 @@ This was a manual browser pass through the admin-visible interface. To protect r
 
 **Resolved:** The API now checks `inventory_item_view`, uses the combined Admin/staff authentication guard, and registers the permissions guard in the stats module. Backend build and focused permission-guard tests passed. Live database-backed verification remains unavailable while the normal Supabase endpoint is unreachable.
 
-### 4. Permission-filtered navigation and page authorization disagree — High
+### 4. [DONE] Permission-filtered navigation and page authorization disagreed — High
 
 **Observed:** The low-access role’s sidebar correctly hid Orders, Inventory, Suppliers, Staff, Settings, and user-management links. However:
 
@@ -92,6 +92,8 @@ This was a manual browser pass through the admin-visible interface. To protect r
 - Direct `/settings` access showed “Failed to fetch settings from the server” alongside editable-looking default values.
 
 The API guards prevented successful protected reads in these cases, but the frontend does not give a clear permission-denied state and can leave staff with misleading controls or spinners.
+
+**Resolved:** Navigation now hides sections marked `adminOnly` from staff, and the Suppliers link requires `supplier_view`. Direct `/customers` and `/settings` access is Admin-only; `/suppliers` waits for staff permissions and requires `supplier_view` before mounting. Supplier add, edit/status, and delete controls are shown only with their matching permissions. Component checks passed for denied/allowed/pending supplier access, admin-only navigation, and Add Supplier visibility. A live staff-browser/database check remains unavailable because the normal Supabase endpoint could not be reached.
 
 ### 5. Staff identity is displayed as generic “Staff” and the email local-part — Medium
 
