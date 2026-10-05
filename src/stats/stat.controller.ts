@@ -2,7 +2,7 @@ import { Controller, Get, UseGuards } from '@nestjs/common';
 import { StatService } from './stat.service';
 import { AdminJwtAuthGuard } from '../admin-auth/guards/admin-jwt-auth.guard';
 import { AdminDashboardDto } from './dto/admin-dashboard-response.dto';
-import { StaffJwtAuthGuard } from '../staff-auth/guards/staff-auth.guard';
+import { AdminOrStaffAuthGuard } from '../staff-auth/guards/admin-or-staff-auth.guard';
 import { PermissionsGuard } from '../staff-auth/guards/permissions.guard';
 import { RequirePermissions } from '../staff-auth/decorators/permissions.decorator';
 import { InventoryDashboardDto } from './dto/inventory-dashboard-response.dto';
@@ -19,8 +19,8 @@ export class StatController {
   }
 
   // INVENTORY MANAGER DASHBOARD
-  @UseGuards(StaffJwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('inventory_view')
+  @UseGuards(AdminOrStaffAuthGuard, PermissionsGuard)
+  @RequirePermissions('inventory_item_view')
   @Get('inventory-dashboard')
   async getInventoryDashboardSummary(): Promise<InventoryDashboardDto> {
     return this.statService.getInventoryDashboardSummary();

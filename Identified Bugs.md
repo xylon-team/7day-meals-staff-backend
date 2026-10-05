@@ -22,11 +22,13 @@
 
 **Observed:** The browser console reports `Backend unavailable, returning mock orders data` / `Failed to fetch orders`. New Orders then displays four pending sample orders with dates from 2023; Order Status displays an empty accepted-orders view. The UI does not make the fallback obvious, so an admin can mistake sample/stale information for live order state. Order actions were not submitted.
 
-### 3. Dashboard inventory stats request is rejected for admin — Medium
+### 3. [DONE] Dashboard inventory stats request was rejected for admin — Medium
 
 **Reproduction:** Open Dashboard (`/dashboard`) as admin and inspect browser console.
 
-**Observed:** The inventory dashboard request returns HTTP 401 and logs `Inventory stats unavailable`. Other dashboard cards render, but the inventory statistics are unavailable to the admin session.
+**Observed:** The inventory dashboard request returned HTTP 401 and logged `Inventory stats unavailable`. Other dashboard cards rendered, but the inventory statistics were unavailable to the admin session.
+
+**Resolved:** The endpoint now accepts Admin or Staff authentication. Staff access checks the existing `inventory_item_view` permission rather than the nonexistent `inventory_view` permission. The focused guard test passes for an Inventory Manager permission and verifies both auth guards are configured. A database-backed request could not be repeated because the normal Supabase endpoint was unreachable.
 
 ### 4. Profile details remain stuck on a loading message — Medium
 
@@ -73,11 +75,13 @@ This was a manual browser pass through the admin-visible interface. To protect r
 
 **Resolved:** Added an Admin-only route guard for both pages. It denies staff before the page components mount, including staff accounts with role-related permissions, consistent with the backend guards. Component checks confirmed low-access staff and permission-bearing staff are denied while Admin is allowed. Browser checks confirmed Admin can still open both routes. A live browser check with a staff login could not be completed because the normal Supabase connection was unavailable.
 
-### 3. Inventory Manager cannot load its inventory dashboard stats — High
+### 3. [DONE] Inventory Manager could not load its inventory dashboard stats — High
 
 **Reproduction:** Sign in with the Inventory Manager role and open Dashboard.
 
-**Observed:** `GET /stats/inventory-dashboard` returns 403 and the dashboard logs `Inventory stats unavailable`. The role’s visible inventory permissions are based on `inventory_item_*`, while this API requires `inventory_view`; the Inventory Manager role had 45/61 permissions but was still rejected. Other dashboard summary cards rendered.
+**Observed:** `GET /stats/inventory-dashboard` returned 403 and the dashboard logged `Inventory stats unavailable`. The role’s visible inventory permissions are based on `inventory_item_*`, while this API required `inventory_view`; the Inventory Manager role had 45/61 permissions but was still rejected. Other dashboard summary cards rendered.
+
+**Resolved:** The API now checks `inventory_item_view`, uses the combined Admin/staff authentication guard, and registers the permissions guard in the stats module. Backend build and focused permission-guard tests passed. Live database-backed verification remains unavailable while the normal Supabase endpoint is unreachable.
 
 ### 4. Permission-filtered navigation and page authorization disagree — High
 
