@@ -19,6 +19,10 @@ export class PermissionsGuard implements CanActivate {
 
     const { user } = context.switchToHttp().getRequest();
 
+    if (user?.adminId) {
+      return true;
+    }
+
     if (!user || !user.staffId) {
       throw new UnauthorizedException('User not authenticated properly');
     }

@@ -37,7 +37,11 @@ export class AdminAuthService {
       data: { last_logged_in: new Date() },
     });
 
-    const payload = { sub: admin.admin_id, username: admin.admin_username };
+    const payload = {
+      sub: admin.admin_id,
+      username: admin.admin_username,
+      user_type: 'admin',
+    };
 
     return {
       access_token: this.jwtService.sign(payload),

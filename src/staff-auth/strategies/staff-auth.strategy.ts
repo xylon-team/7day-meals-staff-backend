@@ -22,6 +22,12 @@ export class StaffJwtStrategy extends PassportStrategy(Strategy, 'staff-jwt') {
   }
 
   async validate(payload: any) {
+    const isStaffToken = payload.user_type === 'staff'
+      || (payload.user_type === undefined && typeof payload.email === 'string' && payload.token_version !== undefined);
+    if (!isStaffToken || typeof payload.email !== 'string') {
+      throw new UnauthorizedException();
+    }
+
     const staff = await this.prisma.staff.findUnique({
       where: { staff_id: payload.sub },
       include: {

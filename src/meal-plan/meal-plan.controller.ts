@@ -3,12 +3,12 @@ import { MealPlanService } from './meal-plan.service';
 import { CreateMealPlanBodyDto } from './dto/create-meal-plan-body.dto';
 import { UpdateMealPlanBodyDto } from './dto/update-meal-plan-body.dto';
 import { UpdateMealPlanStatusDto } from './dto/update-meal-plan-status.dto';
-import { StaffJwtAuthGuard } from '../staff-auth/guards/staff-auth.guard';
 import { PermissionsGuard } from '../staff-auth/guards/permissions.guard';
 import { RequirePermissions } from '../staff-auth/decorators/permissions.decorator';
+import { AdminOrStaffAuthGuard } from './guards/admin-or-staff-auth.guard';
 
 @Controller('meal-plan')
-@UseGuards(StaffJwtAuthGuard, PermissionsGuard)
+@UseGuards(AdminOrStaffAuthGuard, PermissionsGuard)
 export class MealPlanController {
   constructor(private readonly mealPlanService: MealPlanService) {}
 

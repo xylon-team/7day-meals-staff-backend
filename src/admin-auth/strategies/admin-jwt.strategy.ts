@@ -22,11 +22,17 @@ export class AdminJwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
+    const isAdminToken = payload.user_type === 'admin'
+      || (payload.user_type === undefined && typeof payload.username === 'string' && !payload.email);
+    if (!isAdminToken || typeof payload.username !== 'string') {
+      throw new UnauthorizedException();
+    }
+
     const admin = await this.prisma.admin.findUnique({
       where: { admin_id: payload.sub },
     });
 
-    if (!admin) {
+    if (!admin || admin.admin_username !== payload.username) {
       throw new UnauthorizedException();
     }
 

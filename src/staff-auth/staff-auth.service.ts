@@ -51,7 +51,12 @@ export class StaffAuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload = { sub: staffCredential.staff_id, email: staffCredential.email, token_version: staffCredential.token_version };
+    const payload = {
+      sub: staffCredential.staff_id,
+      email: staffCredential.email,
+      token_version: staffCredential.token_version,
+      user_type: 'staff',
+    };
 
     return {
       access_token: this.jwtService.sign(payload),
