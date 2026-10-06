@@ -3,35 +3,37 @@
 **Audit date:** 2026-10-06  
 **Branch:** `bug-fix` in the staff backend and staff frontend repositories.  
 **Environment:** Local staff UI/backend using the normal configured database. No QA database was selected.  
-**Prior report:** All findings in `Identified Bugs.md` were marked `[DONE]`; there were no remaining `[OPEN]` entries to carry forward. The issues below remain unresolved. A later follow-up also found and fixed the Meal Plan creation issue; see `Identified Bugs - Done.md`.
+**Scope:** Admin and staff permission levels, including read, navigation, filtering/search, and create/edit/delete form states where accessible. Delays in loading and repeated supplier contact/address data are accepted by the user and are excluded from findings. Existing testing data was left intact.
 
 ## Confirmed issues
 
-### 1. Test/QA records are mixed into operational admin lists — Low / data cleanup
+### 1. Staff dashboard fails or renders blank for non-admin roles — High
 
-The live Users/Roles, Meal Plans, Suppliers, and Orders screens include Selenium, E2E, Codex QA, and other test-labelled rows. The previous audit also records two temporary staff accounts still present in the normal configured database. These records clutter operational lists and can be mistaken for real users/orders. No records were deleted or changed.
+The staff dashboard requests `/stats/admin-dashboard` for roles with relevant module permissions. That endpoint is Admin-guarded, so staff requests receive HTTP 401; the dashboard's combined load then fails even though other permitted module endpoints respond successfully. This reproduced for `test`, `e2e-test-role`, Inventory Manager, Manager, and a fully permissioned `test-admin2` account. Direct API checks with a staff JWT returned 200 for `/order`, `/food-items`, and `/meal-plan`, and 401 for `/stats/admin-dashboard`.
 
-**Small next step:** Identify and remove only confirmed test records through an approved cleanup, or isolate them from the operational dataset.
+A role with meal-plan-only permissions (`meal_plan_manager`) instead lands on a blank dashboard: it triggers no dashboard-stat request, and the page shows neither module cards nor a no-permissions/empty state.
 
-## Needs profiling / confirmation
+**Affected behavior:** Staff cannot use the dashboard as a landing page; some roles see an error and at least one role sees a blank page despite having access to meal-plan features.
 
-### 2. Meal/order list reads remain slow — Medium candidate
+## Role coverage and observed results
 
-Repeated local calls observed `/order` at about 2.8 seconds and `/meal-plan` at 4.3–5.5 seconds; one pass measured other list reads between 2.8–4.3 seconds. The browser pass also showed longer waits on New Orders and Order Status. The separate Admin dashboard-stat delay was improved by parallelizing its independent reads. The remaining list delays are real, but timing alone does not distinguish query shape from remote database latency or transient network conditions.
+| Staff role | Observed coverage/results |
+|---|---|
+| `meal_plan_manager` | Dashboard blank; Meal Plans loads, and create form opens/cancels; unrelated protected routes are denied. |
+| `test` | Dashboard load error. |
+| `e2e-test-role` | Dashboard load error; Orders and New Orders load; Meals supports view/edit/availability controls while add/delete are absent, matching its grants. |
+| Inventory Manager | Dashboard load error; Suppliers loads with add/edit/status controls; the Settings menu issue was fixed in code (browser re-verification blocked in this session). |
+| Manager | Dashboard load error; Meals search/filter works and add/edit/delete dialogs open and cancel; the Settings menu issue was fixed in code (browser re-verification blocked in this session). |
+| `test-admin2` (all permissions) | Dashboard load error; direct `/users` navigation redirects to Dashboard, consistent with the Admin-only page guard. |
+| Admin | Existing Admin route and read-only API audit is recorded in `Identified Bugs - Done.md`; this audit specifically added non-admin coverage. |
 
-**Next audit step:** Profile the slowest list endpoints and their Prisma queries before choosing a minimal fix.
-
-### 3. Historical incomplete meal plans and repeated supplier records remain — Low / data cleanup
-
-The live database contains five meal plans with no assigned meals (IDs 5, 7, 12, 13, and 27); four are available. IDs 5 and 7 have 3 and 1 linked orders respectively. The order API does not expose subscriptions. The create/edit workflow assigns meals in the same form, and the backend now rejects empty assignments; see finding 27 in `Identified Bugs - Done.md`. These historical rows remain unchanged pending record-level cleanup. A complete inactive sample plan, `Cinnamon Grove Weekly Table`, was added and verified as replacement test data.
-
-The supplier list contains nine persisted rows, including six names sharing the same email and phone. Several names look test-like, but they could also represent branches. No supplier data was changed; the backend has no uniqueness constraint that establishes them as duplicates.
-
-**Next audit step:** Confirm which historical test meal plans to permanently remove, keeping in mind ID 7 has an order reference; decide whether any matching supplier rows should be removed. The supplier Delete control is hidden because no backend DELETE endpoint exists; see finding 28 in `Identified Bugs - Done.md`.
+All opened business forms/dialogs were canceled without submitting writes. No existing orders, meals, meal plans, suppliers, or customer data were changed. Test account IDs 74–80 from the preceding browser pass were absent from the current staff list; deletion requests returned 404 because those records were already absent. No other staff record was targeted for cleanup.
 
 ## Audit coverage and limits
 
-- Opened the Dashboard, Roles & Users, Permissions, Customers, Meals, Meal Plans, New Orders, Order Status, Suppliers, Settings, and My Profile pages as Admin. Inspected list/search/filter/detail and create/edit/delete dialog states where present; canceled all forms/dialogs without saving.
-- Tested read-only API access for customers, orders, food items, meal plans, suppliers, settings, and both dashboard-stat endpoints.
-- Staff permission levels were previously exercised and documented in `Identified Bugs.md` (Inventory Manager and low-access test role). This pass did not create/login as additional staff accounts, change permissions, or submit business mutations.
-- The audit is a thorough manual and source review, not proof that every possible runtime defect has been found. A follow-up fixed the empty-plan write paths and hid the unsupported supplier Delete action; existing database rows remain for separately approved cleanup.
+- Browser-tested login and permissions across the six staff role types above, including role-specific list routes, relevant controls, and direct navigation to protected pages.
+- Checked staff API access for Orders, Food Items, Meal Plans, and the Admin dashboard endpoint with a staff token to isolate the dashboard failure.
+- Inspected available create/edit/delete UI states and canceled without saving. This was a manual usability/authorization audit, not destructive CRUD verification for every module and every permission combination.
+- Loading time and duplicated supplier address/contact data were deliberately excluded because the user said both are acceptable. Existing test/QA records were preserved.
+- This is a broad manual audit, not proof that every possible runtime defect has been found. The dashboard issue remains open and was not changed during the Settings fix.
+
