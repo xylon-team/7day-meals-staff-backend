@@ -10,6 +10,10 @@ export class MealPlanService {
   constructor(private prisma: PrismaService) {}
 
   async create(createMealPlanDto: CreateMealPlanDto, foodItems?: CreateMealPlanFoodItemDto[]) {
+  if (!foodItems?.length) {
+    throw new BadRequestException('A meal plan must include at least one food item');
+  }
+
   return await this.prisma.$transaction(async (tx) => {
     const mealPlan = await tx.meal_plan.create({
       data: {
@@ -107,10 +111,16 @@ export class MealPlanService {
       // Check if meal plan exists
       const existingMealPlan = await tx.meal_plan.findUnique({
         where: { meal_id: id },
+        include: { food_items: { select: { food_item_id: true } } },
       });
 
       if (!existingMealPlan) {
         throw new NotFoundException(`Meal plan with ID ${id} not found`);
+      }
+
+      const resultingFoodItemCount = foodItems?.length ?? existingMealPlan.food_items.length;
+      if (resultingFoodItemCount === 0) {
+        throw new BadRequestException('A meal plan must include at least one food item');
       }
 
       // Update the meal plan
@@ -192,7 +202,11 @@ export class MealPlanService {
   }
 
   async updateStatus(id: number, isAvailable: boolean) {
-    await this.findOne(id); // Check if exists and throws NotFoundException if not
+    const mealPlan = await this.findOne(id); // Check if exists and throws NotFoundException if not
+
+    if (isAvailable && mealPlan.food_items.length === 0) {
+      throw new BadRequestException('A meal plan must include at least one food item before it can be made available');
+    }
 
     return await this.prisma.meal_plan.update({
       where: { meal_id: id },
