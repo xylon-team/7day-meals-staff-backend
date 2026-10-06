@@ -205,11 +205,13 @@ The unknown-email recovery case was submitted; it did not send mail because the 
 
 **Resolved:** Order routes now use the combined Admin-or-Staff authentication guard. Existing `orders_view` and `orders_change` checks remain in place for staff, while the permissions guard’s existing Admin bypass allows Admin JWTs through. Registered the guard dependencies in `OrderModule`. Backend build passes; three focused tests pass for route guard/permission metadata, Admin permission bypass, and module dependency injection. End-to-end HTTP verification remains blocked by normal Supabase connectivity (P1001); no QA database or records were used.
 
-### A5. [OPEN] Admin supplier screens call staff-only API routes — High
+### A5. [DONE] Admin supplier screens call staff-only API routes — High
 
 **Observed in code review:** The Admin portal exposes supplier management, but `src/supplier/supplier.controller.ts` uses only `StaffJwtAuthGuard` plus staff permissions. Admin requests use an Admin JWT, so supplier reads and writes will be rejected. `lib/api/supplier.ts` catches these failures and presents or mutates local mock suppliers, which can make admin changes appear successful without persistence.
 
 **Verification limit:** Not exercised over HTTP because the backend failed at startup. Controller guard metadata, admin navigation permission bypass, and the frontend fallback behavior were inspected.
+
+**Resolved:** Supplier routes now use the combined Admin-or-Staff authentication guard, and `SupplierModule` registers the required guard and permission dependencies. Staff still need the existing `supplier_view`, `supplier_add`, or `supplier_change` permission for the corresponding operation; Admin passes through the existing permission bypass. Removed the frontend's hardcoded Selenium staff login and now send only the signed-in user's token. Backend build and six focused controller/guard/module tests pass; frontend TypeScript passes and a source scan confirms the test-login fallback is gone. Live HTTP verification remains blocked by normal Supabase connectivity (P1001); no QA database or records were used.
 
 ## Verification run
 
