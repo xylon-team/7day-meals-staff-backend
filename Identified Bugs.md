@@ -181,11 +181,13 @@ The unknown-email recovery case was submitted; it did not send mail because the 
 
 **Resolved:** Exported both JWT guards from `StaffAuthModule` so the combined guard’s dependencies resolve across module boundaries. Backend build and a focused `StatModule` dependency-injection test pass. A manual startup now initializes all modules and maps routes, then exits at Prisma with `P1001` because the normal configured Supabase host is unreachable from this environment. The original Nest dependency-injection defect is fixed; live HTTP verification remains blocked by database connectivity.
 
-### A2. [OPEN] Admin login exposes a demo credential autofill — Critical security risk
+### A2. [DONE] Admin login exposes a demo credential autofill — Critical security risk
 
 **Observed:** `/admin-login` renders a “Demo Admin Account” section with a “System Administrator” button. Selecting it fills a fixed administrator username and password embedded in the client bundle. The credential literals are in `pages/admin-login/page.tsx`; values are omitted here. This escaped the earlier hardcoded-credential finding, which only covered the staff API fallback helpers.
 
 **Verification:** The browser displayed the demo button and clicking it populated the username and password fields without submitting the form.
+
+**Resolved:** Removed the demo-account section, autofill handler, and embedded credential literals from the admin login page. Frontend TypeScript passes, the app source scan finds no remaining references to the demo credential/autofill, and a browser check confirms the admin login page now shows only the manual authentication form.
 
 ### A3. [OPEN] API failures can masquerade as saved data — High
 
