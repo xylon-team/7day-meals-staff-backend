@@ -135,9 +135,11 @@ The API guards prevented successful protected reads in these cases, but the fron
 
 **Resolved:** Password recovery now returns the same generic response for existing and unknown emails, and for lookup or mail delivery failures. OTP creation and delivery still occur only for an existing account. Updated the page copy to say that an OTP will be sent if an account exists and removed the inaccurate reset-link wording. Four focused service tests passed for unknown email, known email, mail failure, and lookup failure; the backend builds and frontend TypeScript passes. A live request remains unavailable because the backend currently fails during startup while resolving `AdminOrStaffAuthGuard` in `StatModule`. Frontend ESLint still reports pre-existing unused imports and explicit `any` errors in the forgot-password page.
 
-### 10. Password reset does not invalidate existing staff sessions — High security risk (code review)
+### 10. [DONE] Password reset does not invalidate existing staff sessions — High security risk (code review)
 
 `StaffAuthService.resetPassword()` changes the password hash but does not increment `token_version`. The staff JWT strategy rejects old tokens only when their token version differs from the stored version. A password reset therefore does not revoke already-issued staff tokens. This flow was not submitted because completing it would require sending an OTP email to a real account.
+
+**Resolved:** A successful OTP password reset now increments `token_version` in the same credential update that stores the new password. The existing staff JWT strategy rejects tokens whose version no longer matches. Added a focused test that verifies the reset update increments the version and invalidates reset OTPs. All five staff-auth service tests and the backend build pass. This was verified with mocked persistence; no real account password or session was changed.
 
 ### 11. Customer mutation routes are missing authentication guards — Potential API security issue (code review)
 

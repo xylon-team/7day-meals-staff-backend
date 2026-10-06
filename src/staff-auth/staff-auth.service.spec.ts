@@ -13,16 +13,24 @@ describe('StaffAuthService password recovery', () => {
   };
   let service: StaffAuthService;
   let prisma: {
-    staff_credential: { findFirst: jest.Mock };
-    password_reset_otp: { create: jest.Mock };
+    staff_credential: { findFirst: jest.Mock; update: jest.Mock };
+    password_reset_otp: {
+      create: jest.Mock;
+      findFirst: jest.Mock;
+      deleteMany: jest.Mock;
+    };
   };
   let mockSendMail: jest.Mock;
 
   beforeEach(() => {
     jest.clearAllMocks();
     prisma = {
-      staff_credential: { findFirst: jest.fn() },
-      password_reset_otp: { create: jest.fn() },
+      staff_credential: { findFirst: jest.fn(), update: jest.fn() },
+      password_reset_otp: {
+        create: jest.fn(),
+        findFirst: jest.fn(),
+        deleteMany: jest.fn(),
+      },
     };
     service = new StaffAuthService(
       prisma as unknown as PrismaService,
@@ -75,5 +83,30 @@ describe('StaffAuthService password recovery', () => {
     await expect(service.sendOtpEmail('unknown@example.test')).resolves.toEqual(
       genericResponse,
     );
+  });
+
+  it('increments the staff token version when resetting a password', async () => {
+    prisma.password_reset_otp.findFirst.mockResolvedValue({
+      otp: '123456',
+      expiresAt: new Date(Date.now() + 60_000),
+    });
+    prisma.staff_credential.findFirst.mockResolvedValue({ staff_id: 42 });
+    prisma.staff_credential.update.mockResolvedValue({});
+    prisma.password_reset_otp.deleteMany.mockResolvedValue({ count: 1 });
+
+    await expect(
+      service.resetPassword('staff@example.test', '123456', 'NewPassword1!'),
+    ).resolves.toEqual({ message: 'Password reset successfully' });
+
+    expect(prisma.staff_credential.update).toHaveBeenCalledWith({
+      where: { staff_id: 42 },
+      data: expect.objectContaining({
+        staff_password: expect.any(String),
+        token_version: { increment: 1 },
+      }),
+    });
+    expect(prisma.password_reset_otp.deleteMany).toHaveBeenCalledWith({
+      where: { email: 'staff@example.test' },
+    });
   });
 });

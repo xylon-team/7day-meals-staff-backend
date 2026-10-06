@@ -207,7 +207,10 @@ export class StaffAuthService {
     // 4. Update the password in DB
     await this.prisma.staff_credential.update({
       where: { staff_id: credential.staff_id },
-      data: { staff_password: hashedPassword },
+      data: {
+        staff_password: hashedPassword,
+        token_version: { increment: 1 },
+      },
     });
 
     // 5. Delete all OTPs for this email to invalidate them
