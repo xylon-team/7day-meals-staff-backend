@@ -36,6 +36,11 @@ import { AdminOrStaffAuthGuard } from './guards/admin-or-staff-auth.guard';
     StaffJwtAuthGuard,
     AdminOrStaffAuthGuard,
   ],
-  exports: [StaffAuthService, AdminOrStaffAuthGuard],
+  exports: [
+    StaffAuthService,
+    AdminJwtAuthGuard,
+    StaffJwtAuthGuard,
+    AdminOrStaffAuthGuard,
+  ],
 })
 export class StaffAuthModule {}

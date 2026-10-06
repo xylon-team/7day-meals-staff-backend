@@ -173,11 +173,13 @@ The unknown-email recovery case was submitted; it did not send mail because the 
 
 ## Newly identified findings
 
-### A1. [OPEN] Staff backend cannot start — Blocker
+### A1. [DONE] Staff backend cannot start — Blocker
 
-**Observed:** Nest exits with `UnknownDependenciesException`: `AdminOrStaffAuthGuard` requires `AdminJwtAuthGuard`, but Nest cannot resolve that dependency while creating the guard for `StatModule`. The frontend admin login consequently returns “Failed to fetch.” Staff login and authenticated feature workflows cannot be audited while the API is down.
+**Observed:** Nest exited with `UnknownDependenciesException`: `AdminOrStaffAuthGuard` requires `AdminJwtAuthGuard`, but Nest could not resolve that dependency while creating the guard for `StatModule`. The frontend admin login consequently returned “Failed to fetch.”
 
-**Evidence:** `src/stats/stat.module.ts` imports `StaffAuthModule` and registers `PermissionsGuard`; `StaffAuthModule` provides `AdminJwtAuthGuard` but does not export it, while exporting the combined guard consumed by `StatModule`. The runtime startup failure occurs while resolving that dependency. Backend TypeScript build passes, which does not catch this module dependency error.
+**Evidence:** `src/stats/stat.module.ts` imports `StaffAuthModule` and registers `PermissionsGuard`; `StaffAuthModule` provided `AdminJwtAuthGuard` but did not export it, while exporting the combined guard consumed by `StatModule`.
+
+**Resolved:** Exported both JWT guards from `StaffAuthModule` so the combined guard’s dependencies resolve across module boundaries. Backend build and a focused `StatModule` dependency-injection test pass. A manual startup now initializes all modules and maps routes, then exits at Prisma with `P1001` because the normal configured Supabase host is unreachable from this environment. The original Nest dependency-injection defect is fixed; live HTTP verification remains blocked by database connectivity.
 
 ### A2. [OPEN] Admin login exposes a demo credential autofill — Critical security risk
 
