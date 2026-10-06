@@ -34,11 +34,13 @@
 
 **Resolved:** The endpoint now accepts Admin or Staff authentication. Staff access checks the existing `inventory_item_view` permission rather than the nonexistent `inventory_view` permission. The focused guard test passes for an Inventory Manager permission and verifies both auth guards are configured. A database-backed request could not be repeated because the normal Supabase endpoint was unreachable.
 
-### 4. Profile details remain stuck on a loading message — Medium
+### 4. [DONE] Profile details remain stuck on a loading message — Medium
 
 **Reproduction:** Open My Profile from the account menu.
 
 **Observed:** The profile page continues to show “Loading profile details…” after waiting. The Edit Profile form can still be opened and displays populated fields, so profile data appears available to part of the UI while the details section never finishes loading.
+
+**Resolved:** Bounded profile API loading to five seconds. If the request stalls or fails, the page now fills the form from the signed-in user’s stored identity and clears the loading state, so profile details remain usable. A focused timeout check passes for both stalled and successful requests; frontend TypeScript passes. ESLint still reports two pre-existing explicit `any` errors in this page. Browser login regression could not be completed because the frontend requires an email-formatted username and rejected the previously provided `admin_local` value before submitting.
 
 ## Areas exercised
 
