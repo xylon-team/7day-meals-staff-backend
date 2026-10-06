@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  NotImplementedException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -12,7 +13,7 @@ export class CustomerService {
   constructor(private readonly prisma: PrismaService) {}
 
   create(createCustomerDto: CreateCustomerDto) {
-    return 'This action adds a new customer';
+    throw new NotImplementedException('Customer creation is not implemented');
   }
 
   // ============= Customer Directory =============
@@ -49,8 +50,28 @@ export class CustomerService {
     return customer;
   }
 
-  update(id: number, updateCustomerDto: UpdateCustomerDto) {
-    return `This action updates a #${id} customer`;
+  async update(id: number, updateCustomerDto: UpdateCustomerDto) {
+    if (!Number.isInteger(id) || id <= 0 || id > 2147483647) {
+      throw new BadRequestException(
+        'Customer ID must be a positive 32-bit integer',
+      );
+    }
+    if (updateCustomerDto.is_active === undefined) {
+      throw new BadRequestException('No valid customer fields provided');
+    }
+
+    try {
+      return await this.prisma.customer.update({
+        where: { customer_id: id },
+        data: { is_active: updateCustomerDto.is_active },
+        select: { customer_id: true, is_active: true },
+      });
+    } catch (error) {
+      if (error instanceof Error && 'code' in error && error.code === 'P2025') {
+        throw new NotFoundException(`Customer with ID ${id} not found`);
+      }
+      throw error;
+    }
   }
 
   async deactivate(id: number) {
@@ -71,6 +92,6 @@ export class CustomerService {
   }
 
   remove(id: number) {
-    return `This action removes a #${id} customer`;
+    throw new NotImplementedException('Customer deletion is not implemented');
   }
 }

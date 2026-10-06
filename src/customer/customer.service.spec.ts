@@ -45,7 +45,10 @@ describe('CustomerService', () => {
 
     expect(await service.findAll()).toEqual(records);
     expect(customer.findMany).toHaveBeenCalledWith({
-      include: { credential: { select: { email: true } } },
+      include: {
+        credential: { select: { email: true } },
+        _count: { select: { orders: true } },
+      },
       orderBy: [{ registration_date: 'desc' }, { customer_id: 'desc' }],
     });
   });
@@ -108,5 +111,30 @@ describe('CustomerService', () => {
   it('propagates database failures instead of reporting a missing customer', async () => {
     customer.findUnique.mockRejectedValue(new Error('Database unavailable'));
     await expect(service.findOne(1)).rejects.toThrow('Database unavailable');
+  });
+
+  it('updates customer active status and returns the persisted state', async () => {
+    customer.update.mockResolvedValue({ customer_id: 1, is_active: true });
+    await expect(service.update(1, { is_active: true })).resolves.toEqual({
+      customer_id: 1,
+      is_active: true,
+    });
+    expect(customer.update).toHaveBeenCalledWith({
+      where: { customer_id: 1 },
+      data: { is_active: true },
+      select: { customer_id: true, is_active: true },
+    });
+  });
+
+  it('rejects an empty customer update', async () => {
+    await expect(service.update(1, {})).rejects.toThrow(BadRequestException);
+    expect(customer.update).not.toHaveBeenCalled();
+  });
+
+  it('returns 404 when the customer being updated does not exist', async () => {
+    customer.update.mockRejectedValue(Object.assign(new Error('Missing'), { code: 'P2025' }));
+    await expect(service.update(1, { is_active: true })).rejects.toThrow(
+      NotFoundException,
+    );
   });
 });

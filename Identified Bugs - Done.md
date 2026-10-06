@@ -32,6 +32,11 @@
 19. **Admin order pages called staff-only endpoints.** Switched order routes to the combined Admin/Staff guard while retaining staff permission checks and Admin bypass.
 20. **Admin supplier pages called staff-only endpoints.** Switched supplier routes to the combined guard, registered its dependencies, retained staff permission checks, and removed the Selenium-login fallback.
 
+## Follow-up fixes
+
+21. **Customer order counts displayed as zero.** Added the related-order count to the customer directory API response and taught the frontend mapper to read Prisma's `_count.orders`. Verified against the live API (19 customers, 34 orders, 11 customers with orders) and the staff UI, where nonzero counts appeared and matched the returned counts.
+22. **Customer activation appeared successful without saving.** Added a validated `is_active` update and persisted it through Prisma. The unimplemented customer create/delete routes now return HTTP 501 instead of success-looking placeholder strings. Focused customer-service tests (17) and backend build passed. Manually activated the synthetic test customer in the staff UI, reloaded to verify it stayed active, then deactivated it; a final API read confirmed its original inactive state was restored.
+
 ## Verification notes
 
 - During the 2026-10-06 audit, the staff backend and frontend were available locally on the `bug-fix` branches. Admin login succeeded through the normal configured database.

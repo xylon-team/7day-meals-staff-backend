@@ -13,25 +13,13 @@ The Admin login stores no user ID, and the profile page treats the Admin as a st
 
 **Small next step:** Hide unsupported controls for Admin or add Admin-specific profile/password endpoints and route the page by account type.
 
-### 2. Customer order counts always display as zero — Medium
-
-The customer list UI maps the count from `orders`, `totalOrders`, or `orders_count`, defaulting to zero. The backend customer list does not return any of those fields. Live verification returned 19 customers and 34 orders; 11 customer IDs occurred in the order list, while zero customer payloads had an order-count field. The customer table therefore shows zero even for customers with orders.
-
-**Small next step:** Return an order count from the customer query or populate it from the existing order data.
-
-### 3. Customer activation reports success but is not persisted — High
-
-The customer UI activates an account with `PATCH /customer/:id`. The controller calls `CustomerService.update()`, but that service currently returns a placeholder string and does not update Prisma. The UI then updates its local row optimistically, so the customer appears active until a reload, after which the database state wins. The related customer create/delete service methods are placeholders too; those routes can also return success-looking strings without performing an operation. No mutation request was sent.
-
-**Small next step:** Implement the status update used by the UI (or route activation to a dedicated service method); keep unimplemented create/delete routes from returning success-shaped responses.
-
-### 4. Test/QA records are mixed into operational admin lists — Low / data cleanup
+### 2. Test/QA records are mixed into operational admin lists — Low / data cleanup
 
 The live Users/Roles, Meal Plans, Suppliers, and Orders screens include Selenium, E2E, Codex QA, and other test-labelled rows. The previous audit also records two temporary staff accounts still present in the normal configured database. These records clutter operational lists and can be mistaken for real users/orders. No records were deleted or changed.
 
 **Small next step:** Identify and remove only confirmed test records through an approved cleanup, or isolate them from the operational dataset.
 
-### 5. Icon-only controls have no accessible name — Low / accessibility
+### 3. Icon-only controls have no accessible name — Low / accessibility
 
 Availability and staff-status switches, plus password-visibility buttons, are rendered as icon/switch buttons without `aria-label` or equivalent accessible text. The browser accessibility tree exposes the table switches as unnamed buttons, so screen-reader users cannot tell which record/control they operate or its state.
 
@@ -39,13 +27,13 @@ Availability and staff-status switches, plus password-visibility buttons, are re
 
 ## Needs profiling / confirmation
 
-### 6. Slow API reads cause long loading states — Medium candidate
+### 4. Slow API reads cause long loading states — Medium candidate
 
 One live timing pass observed approximately 2.8–5.6 seconds for ordinary list reads (`/customer`, `/order`, `/food-items`, `/meal-plan`, `/suppliers`) and 6.6–10.1 seconds for dashboard statistics. The browser pass also showed longer waits on the New Orders and Order Status screens. These are real user-visible delays, but a single local timing pass cannot establish whether the cause is query shape, remote database latency, or transient network conditions.
 
 **Next audit step:** Repeat timings over several runs, separate backend/database latency from frontend loading, then inspect the slowest query before choosing a minimal fix.
 
-### 7. Meal-plan and supplier lists contain apparent incomplete/test data — Low candidate
+### 5. Meal-plan and supplier lists contain apparent incomplete/test data — Low candidate
 
 The live Meal Plans list included several records with zero meals, missing week ranges, or zero prices; the Supplier list included repeated test-like entries. This may be deliberate draft/test data rather than a validation defect, so it is not classified as a confirmed application bug. No records were edited.
 
