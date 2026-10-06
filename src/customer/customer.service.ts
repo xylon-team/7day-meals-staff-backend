@@ -19,7 +19,10 @@ export class CustomerService {
   findAll() {
     // Include all account statuses for auditing, but expose only email from credentials.
     return this.prisma.customer.findMany({
-      include: { credential: { select: { email: true } } },
+      include: {
+        credential: { select: { email: true } },
+        _count: { select: { orders: true } },
+      },
       orderBy: [{ registration_date: 'desc' }, { customer_id: 'desc' }],
     });
   }
