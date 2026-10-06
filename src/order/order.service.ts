@@ -27,6 +27,10 @@ export class OrderService {
         ...(filters.is_a_subscribed_meal !== undefined && { is_a_subscribed_meal: filters.is_a_subscribed_meal }),
         ...(filters.offer_id && { offer_id: filters.offer_id }),
       },
+      include: {
+        customer: { select: { fname: true, lname: true } },
+        meal_plan: { select: { item_name: true, price: true } },
+      },
     });
   }
 
@@ -53,6 +57,10 @@ export class OrderService {
       return await this.prisma.customer_order.update({
         where: { order_id: id },
         data: updateOrderDto,
+        include: {
+          customer: { select: { fname: true, lname: true } },
+          meal_plan: { select: { item_name: true, price: true } },
+        },
       });
     } catch (error) {
       if (error instanceof Error && 'code' in error && error.code === 'P2003') {
@@ -73,6 +81,10 @@ export class OrderService {
     return await this.prisma.customer_order.update({
       where: { order_id: id },
       data: { order_status },
+      include: {
+        customer: { select: { fname: true, lname: true } },
+        meal_plan: { select: { item_name: true, price: true } },
+      },
     });
   }
 
