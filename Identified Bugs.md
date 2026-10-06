@@ -111,11 +111,13 @@ The API guards prevented successful protected reads in these cases, but the fron
 
 **Resolved:** The staff login checkbox now selects the persistence store: unchecked sessions use `sessionStorage` and end with the browser tab session, while checked sessions use `localStorage` and survive browser restarts. Changing the choice clears the old copy before persisting the new session. Verified the unchecked and checked paths, simulated store rehydration after reload for both, and confirmed Admin login retains its existing persistent behavior. Frontend TypeScript and focused ESLint checks passed. A live browser/database login remains unavailable because the backend currently fails during startup while resolving `AdminOrStaffAuthGuard` in `StatModule`.
 
-### 7. Demo staff login buttons do not authenticate against the normal configured database — Medium
+### 7. [DONE] Demo staff login buttons do not authenticate against the normal configured database — Medium
 
 **Reproduction:** On `/login`, click Catering Manager or Inventory Manager, then Sign In.
 
 **Observed:** Both buttons prefilled credentials that were rejected as “Invalid credentials” in the normal configured environment. The demo affordances imply those accounts are ready to use, but neither worked here.
+
+**Resolved:** Removed the nonfunctional Catering Manager and Inventory Manager demo buttons and their hardcoded credential values. The login page now tells staff to use credentials provided by their administrator; the regular email/password login remains available. Verified the demo labels and credential literals are absent while the normal login flow remains, and passed frontend TypeScript and focused ESLint checks. A live database login remains unavailable because the backend currently fails during startup while resolving `AdminOrStaffAuthGuard` in `StatModule`.
 
 ### 8. Staff creation rejects legitimate multi-part names — Medium
 
