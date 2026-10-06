@@ -3,7 +3,7 @@
 **Audit date:** 2026-10-06  
 **Branch:** `bug-fix` in the staff backend and staff frontend repositories.  
 **Environment:** Local staff UI/backend using the normal configured database. No QA database was selected.  
-**Prior report:** All findings in `Identified Bugs.md` were marked `[DONE]`; there were no remaining `[OPEN]` entries to carry forward. The newly identified issues below remain unresolved. No fixes were made during this audit.
+**Prior report:** All findings in `Identified Bugs.md` were marked `[DONE]`; there were no remaining `[OPEN]` entries to carry forward. The issues below remain unresolved. A later follow-up also found and fixed the Meal Plan creation issue; see `Identified Bugs - Done.md`.
 
 ## Confirmed issues
 
