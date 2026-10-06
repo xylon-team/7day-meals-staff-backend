@@ -16,13 +16,15 @@
 
 **Resolved:** Removed sidebar entries for modules with no implemented page, and removed the dashboard’s “Create Request” action that navigated to the missing Supply Requests page. Existing Staff, Suppliers, and stock summary access remains through the implemented Users, Suppliers, and Dashboard pages. Verified that all 10 remaining sidebar destinations resolve to an app or pages route and that no links/actions remain for the seven missing destinations. Frontend TypeScript passes. ESLint still reports pre-existing hook/state and explicit `any` issues in Layout and Dashboard.
 
-### 2. Orders pages fail to load backend data and silently show sample orders — High
+### 2. [DONE] Orders pages fail to load backend data and silently show sample orders — High
 
 **Affected pages:** New Orders (`/new-orders`) and Order Status (`/orders`).
 
 **Reproduction:** Open either page after admin login.
 
 **Observed:** The browser console reports `Backend unavailable, returning mock orders data` / `Failed to fetch orders`. New Orders then displays four pending sample orders with dates from 2023; Order Status displays an empty accepted-orders view. The UI does not make the fallback obvious, so an admin can mistake sample/stale information for live order state. Order actions were not submitted.
+
+**Resolved:** Removed the hardcoded order fallback so API failures now propagate. New Orders and Order Status display an explicit load-error message with a Retry button instead of sample orders or a misleading empty state. TypeScript passes; a focused simulated-503 check confirms `getOrders()` rejects without returning mock data. ESLint still reports existing `any` and unused-catch issues in the touched files.
 
 ### 3. [DONE] Dashboard inventory stats request was rejected for admin — Medium
 
