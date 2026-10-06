@@ -127,11 +127,13 @@ The API guards prevented successful protected reads in these cases, but the fron
 
 **Resolved:** Replaced the ASCII-only name check with shared Unicode-aware validation for staff first and last names. It accepts multi-part names, apostrophes, hyphens, accented letters, and combining marks while rejecting empty names, digits, underscores, and malformed separators. Updated the inline validation message. Test cases passed for valid and invalid examples, and TypeScript plus ESLint on the validator passed. ESLint on the full users page still reports existing hook-order, unused variable, and other unrelated lint issues.
 
-### 9. Password recovery reveals whether a staff email exists — Medium security risk
+### 9. [DONE] Password recovery reveals whether a staff email exists — Medium security risk
 
 **Reproduction:** Submit a non-existent email on `/forgot-password`.
 
 **Observed:** The public form returned “No staff account associated with this email address.” This distinguishes registered staff emails from unregistered ones. The page also says it will send a “reset link,” while the actual workflow sends an OTP.
+
+**Resolved:** Password recovery now returns the same generic response for existing and unknown emails, and for lookup or mail delivery failures. OTP creation and delivery still occur only for an existing account. Updated the page copy to say that an OTP will be sent if an account exists and removed the inaccurate reset-link wording. Four focused service tests passed for unknown email, known email, mail failure, and lookup failure; the backend builds and frontend TypeScript passes. A live request remains unavailable because the backend currently fails during startup while resolving `AdminOrStaffAuthGuard` in `StatModule`. Frontend ESLint still reports pre-existing unused imports and explicit `any` errors in the forgot-password page.
 
 ### 10. Password reset does not invalidate existing staff sessions — High security risk (code review)
 

@@ -137,45 +137,37 @@ export class StaffAuthService {
   }
 
   async sendOtpEmail(email: string) {
-    // 1. Verify if staff credential exists with this email
-    const credential = await this.prisma.staff_credential.findFirst({
-      where: { email },
-    });
+    const genericResponse = {
+      message: 'If a staff account exists for this email, an OTP will be sent.',
+    };
 
-    if (!credential) {
-      throw new NotFoundException('No staff account associated with this email address');
-    }
-
-    // 2. Generate a 6-digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-    // 3. Set expiration time (e.g., 15 minutes from now)
-    const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
-
-    // 4. Save to DB
-    await this.prisma.password_reset_otp.create({
-      data: {
-        email,
-        otp,
-        expiresAt,
-      },
-    });
-
-    // 5. Send Email
     try {
-      await this.transporter.sendMail({
-        from: `"7Day Meals Staff" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
-        to: email,
-        subject: 'Password Reset OTP',
-        text: `Your OTP for password reset is: ${otp}. It is valid for 15 minutes.`,
-        html: `<p>Your OTP for password reset is: <strong>${otp}</strong>. It is valid for 15 minutes.</p>`,
+      const credential = await this.prisma.staff_credential.findFirst({
+        where: { email },
       });
+
+      if (credential) {
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+        await this.prisma.password_reset_otp.create({
+          data: { email, otp, expiresAt },
+        });
+
+        await this.transporter.sendMail({
+          from: `"7Day Meals Staff" <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
+          to: email,
+          subject: 'Password Reset OTP',
+          text: `Your OTP for password reset is: ${otp}. It is valid for 15 minutes.`,
+          html: `<p>Your OTP for password reset is: <strong>${otp}</strong>. It is valid for 15 minutes.</p>`,
+        });
+      }
     } catch (error) {
-      console.error('Error sending email:', error);
-      throw new BadRequestException('Failed to send OTP email');
+      // Keep storage and mail failures from revealing whether the email exists.
+      console.error('Unable to process staff password recovery request:', error);
     }
 
-    return { message: 'OTP sent successfully to your email' };
+    return genericResponse;
   }
 
   async verifyOtp(email: string, otp: string) {
