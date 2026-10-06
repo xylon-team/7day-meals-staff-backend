@@ -19,6 +19,7 @@ export class CustomerController {
   constructor(private readonly customerService: CustomerService) {}
 
   @Post()
+  @UseGuards(AdminJwtAuthGuard)
   create(@Body() createCustomerDto: CreateCustomerDto) {
     return this.customerService.create(createCustomerDto);
   }
@@ -38,6 +39,7 @@ export class CustomerController {
   }
 
   @Patch(':id')
+  @UseGuards(AdminJwtAuthGuard)
   update(
     @Param('id') id: string,
     @Body() updateCustomerDto: UpdateCustomerDto,
@@ -52,6 +54,7 @@ export class CustomerController {
   }
 
   @Delete(':id')
+  @UseGuards(AdminJwtAuthGuard)
   remove(@Param('id') id: string) {
     return this.customerService.remove(+id);
   }

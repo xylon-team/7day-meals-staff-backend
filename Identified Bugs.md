@@ -141,9 +141,11 @@ The API guards prevented successful protected reads in these cases, but the fron
 
 **Resolved:** A successful OTP password reset now increments `token_version` in the same credential update that stores the new password. The existing staff JWT strategy rejects tokens whose version no longer matches. Added a focused test that verifies the reset update increments the version and invalidates reset OTPs. All five staff-auth service tests and the backend build pass. This was verified with mocked persistence; no real account password or session was changed.
 
-### 11. Customer mutation routes are missing authentication guards — Potential API security issue (code review)
+### 11. [DONE] Customer mutation routes are missing authentication guards — Potential API security issue (code review)
 
 `POST /customer`, `PATCH /customer/:id`, and `DELETE /customer/:id` have no controller-level auth guard, unlike the customer read routes. The current service methods are placeholders and return strings instead of changing records, so I did not send mutation requests. Add explicit authorization before those operations are implemented.
+
+**Resolved:** Added the existing `AdminJwtAuthGuard` to customer create, update, and delete handlers, matching the existing customer read and deactivate routes. Added controller metadata checks for all three mutation handlers. The focused controller suite passes (4 tests) and the backend builds. No mutation request was sent because these service methods are placeholders. This staff follow-up now has no remaining open items; three earlier admin-portal findings remain open above.
 
 ## Staff permission test matrix
 
