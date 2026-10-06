@@ -21,15 +21,17 @@ Repeated local calls observed `/order` at about 2.8 seconds and `/meal-plan` at 
 
 **Next audit step:** Profile the slowest list endpoints and their Prisma queries before choosing a minimal fix.
 
-### 3. Meal-plan and supplier lists contain apparent incomplete/test data — Low candidate
+### 3. Historical incomplete meal plans and repeated supplier records remain — Low / data cleanup
 
-The live Meal Plans list included several records with zero meals, missing week ranges, or zero prices; the Supplier list included repeated test-like entries. This may be deliberate draft/test data rather than a validation defect, so it is not classified as a confirmed application bug. No records were edited.
+The live database contains five meal plans with no assigned meals (IDs 5, 7, 12, 13, and 27); four are available. IDs 5 and 7 have 3 and 1 linked orders respectively. The order API does not expose subscriptions. The create/edit workflow assigns meals in the same form, and the backend now rejects empty assignments; see finding 27 in `Identified Bugs - Done.md`. These historical rows remain unchanged pending record-level cleanup. A complete inactive sample plan, `Cinnamon Grove Weekly Table`, was added and verified as replacement test data.
 
-**Next audit step:** Confirm the intended rules for publishable meal plans and supplier uniqueness, then decide whether the rows are test-data cleanup or missing validation.
+The supplier list contains nine persisted rows, including six names sharing the same email and phone. Several names look test-like, but they could also represent branches. No supplier data was changed; the backend has no uniqueness constraint that establishes them as duplicates.
+
+**Next audit step:** Confirm which historical test meal plans to permanently remove, keeping in mind ID 7 has an order reference; decide whether any matching supplier rows should be removed. The supplier Delete control is hidden because no backend DELETE endpoint exists; see finding 28 in `Identified Bugs - Done.md`.
 
 ## Audit coverage and limits
 
 - Opened the Dashboard, Roles & Users, Permissions, Customers, Meals, Meal Plans, New Orders, Order Status, Suppliers, Settings, and My Profile pages as Admin. Inspected list/search/filter/detail and create/edit/delete dialog states where present; canceled all forms/dialogs without saving.
 - Tested read-only API access for customers, orders, food items, meal plans, suppliers, settings, and both dashboard-stat endpoints.
 - Staff permission levels were previously exercised and documented in `Identified Bugs.md` (Inventory Manager and low-access test role). This pass did not create/login as additional staff accounts, change permissions, or submit business mutations.
-- The audit is a thorough manual and source review, not proof that every possible runtime defect has been found. No code fixes, test-data cleanup, or commits were made for these open findings.
+- The audit is a thorough manual and source review, not proof that every possible runtime defect has been found. A follow-up fixed the empty-plan write paths and hid the unsupported supplier Delete action; existing database rows remain for separately approved cleanup.
