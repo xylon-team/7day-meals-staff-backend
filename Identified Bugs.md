@@ -151,7 +151,7 @@ The API guards prevented successful protected reads in these cases, but the fron
 
 `POST /customer`, `PATCH /customer/:id`, and `DELETE /customer/:id` have no controller-level auth guard, unlike the customer read routes. The current service methods are placeholders and return strings instead of changing records, so I did not send mutation requests. Add explicit authorization before those operations are implemented.
 
-**Resolved:** Added the existing `AdminJwtAuthGuard` to customer create, update, and delete handlers, matching the existing customer read and deactivate routes. Added controller metadata checks for all three mutation handlers. The focused controller suite passes (4 tests) and the backend builds. No mutation request was sent because these service methods are placeholders. This staff follow-up now has no remaining open items; three earlier admin-portal findings remain open above.
+**Resolved:** Added the existing `AdminJwtAuthGuard` to customer create, update, and delete handlers, matching the existing customer read and deactivate routes. Added controller metadata checks for all three mutation handlers. The focused controller suite passes (4 tests) and the backend builds. No mutation request was sent because these service methods are placeholders. This staff follow-up and the earlier admin-portal findings above have no remaining open items from the initial audit.
 
 ## Staff permission test matrix
 
@@ -164,3 +164,55 @@ The API guards prevented successful protected reads in these cases, but the fron
 ## Password recovery and mutation boundary
 
 The unknown-email recovery case was submitted; it did not send mail because the address had no staff account. I did not request an OTP for a real account, reset a password, save settings, change permissions, change existing staff status, or accept/reject/update orders. The two temporary QA staff accounts remain in the normal configured database pending approval to permanently delete them.
+
+---
+
+# Fresh Branch Audit — 2026-10-06
+
+**Branch:** `bug-fix` in the staff frontend and backend repositories. The customer repositories remain on `dev`; they were outside this staff-portal audit. The frontend was run locally. The backend compiled, then exited before opening its HTTP port while Nest created `StatModule`. The configured normal database was not reached, and no database records were changed.
+
+## Newly identified findings
+
+### A1. [OPEN] Staff backend cannot start — Blocker
+
+**Observed:** Nest exits with `UnknownDependenciesException`: `AdminOrStaffAuthGuard` requires `AdminJwtAuthGuard`, but Nest cannot resolve that dependency while creating the guard for `StatModule`. The frontend admin login consequently returns “Failed to fetch.” Staff login and authenticated feature workflows cannot be audited while the API is down.
+
+**Evidence:** `src/stats/stat.module.ts` imports `StaffAuthModule` and registers `PermissionsGuard`; `StaffAuthModule` provides `AdminJwtAuthGuard` but does not export it, while exporting the combined guard consumed by `StatModule`. The runtime startup failure occurs while resolving that dependency. Backend TypeScript build passes, which does not catch this module dependency error.
+
+### A2. [OPEN] Admin login exposes a demo credential autofill — Critical security risk
+
+**Observed:** `/admin-login` renders a “Demo Admin Account” section with a “System Administrator” button. Selecting it fills a fixed administrator username and password embedded in the client bundle. The credential literals are in `pages/admin-login/page.tsx`; values are omitted here. This escaped the earlier hardcoded-credential finding, which only covered the staff API fallback helpers.
+
+**Verification:** The browser displayed the demo button and clicking it populated the username and password fields without submitting the form.
+
+### A3. [OPEN] API failures can masquerade as saved data — High
+
+**Observed in code review:** Several frontend API helpers return local mock records when requests fail or are unauthorized. This includes customer, staff, role, supplier, and meal-plan reads. Staff, role, and supplier mutation helpers also catch failures and return/update in-memory mock data (including role permission assignment/removal and delete operations). The UI can therefore display demo records or report a mutation as successful although the configured backend did not save it. The fixed order fallback was only one instance of this broader pattern.
+
+**Verification limit:** The backend could not be started, so these helper failure paths were confirmed from source, not exercised end to end through an authenticated browser session.
+
+### A4. [OPEN] Admin order screens call staff-only API routes — High
+
+**Observed in code review:** The Admin portal exposes New Orders and Order Status, but `src/order/order.controller.ts` applies only `StaffJwtAuthGuard` and `PermissionsGuard`. The frontend sends the signed-in user’s Admin JWT, which is not a staff JWT. Admin requests to `/order` and order status updates will therefore be rejected even when the Admin UI grants access. The order fallback removal from the earlier fix now makes the request failure visible instead of showing fabricated order data.
+
+**Verification limit:** Not exercised over HTTP because the backend failed at startup. Controller guard metadata and frontend token handling were inspected.
+
+### A5. [OPEN] Admin supplier screens call staff-only API routes — High
+
+**Observed in code review:** The Admin portal exposes supplier management, but `src/supplier/supplier.controller.ts` uses only `StaffJwtAuthGuard` plus staff permissions. Admin requests use an Admin JWT, so supplier reads and writes will be rejected. `lib/api/supplier.ts` catches these failures and presents or mutates local mock suppliers, which can make admin changes appear successful without persistence.
+
+**Verification limit:** Not exercised over HTTP because the backend failed at startup. Controller guard metadata, admin navigation permission bypass, and the frontend fallback behavior were inspected.
+
+## Verification run
+
+- Staff backend TypeScript build: passed.
+- Staff backend startup: failed before listening, as described in A1.
+- Staff backend Jest: 10 suites passed; 3 suites could not load because `@nestjs/mapped-types` is ESM while the current Jest transform attempts to load it as CommonJS. The 10 runnable suites reported 47 passing tests.
+- Staff frontend TypeScript: passed.
+- Staff frontend ESLint: failed with 57 errors and 41 warnings across the project.
+- Staff frontend production build: failed because Next.js could not fetch the Geist and Geist Mono Google Fonts in this network-restricted environment.
+- Browser: Admin login page loaded; submission failed with “Failed to fetch” because the backend was not listening. No successful admin or staff login was possible in this pass.
+
+## Audit boundary
+
+The authenticated Admin, Inventory Manager, and lower-permission staff feature matrix could not be re-run because of A1. No create, update, delete, permission, order, or settings action was submitted. The two temporary staff QA accounts mentioned above remain in the normal configured database; they were not deleted during this audit.
