@@ -189,17 +189,21 @@ The unknown-email recovery case was submitted; it did not send mail because the 
 
 **Resolved:** Removed the demo-account section, autofill handler, and embedded credential literals from the admin login page. Frontend TypeScript passes, the app source scan finds no remaining references to the demo credential/autofill, and a browser check confirms the admin login page now shows only the manual authentication form.
 
-### A3. [OPEN] API failures can masquerade as saved data — High
+### A3. [DONE] API failures can masquerade as saved data — High
 
 **Observed in code review:** Several frontend API helpers return local mock records when requests fail or are unauthorized. This includes customer, staff, role, supplier, and meal-plan reads. Staff, role, and supplier mutation helpers also catch failures and return/update in-memory mock data (including role permission assignment/removal and delete operations). The UI can therefore display demo records or report a mutation as successful although the configured backend did not save it. The fixed order fallback was only one instance of this broader pattern.
 
 **Verification limit:** The backend could not be started, so these helper failure paths were confirmed from source, not exercised end to end through an authenticated browser session.
 
-### A4. [OPEN] Admin order screens call staff-only API routes — High
+**Resolved:** Removed mock customer, staff, role, supplier, and meal-plan records and silent-success mutation fallbacks from the frontend API helpers. Failed HTTP responses now reject so existing page handlers can show errors. The Roles & Permissions page no longer starts with a fabricated default permission matrix; it shows a load error with Retry and disables saving until its data loads. Supplier status updates retain the current supplier only when the backend confirms success. Frontend TypeScript passes, a focused simulated-HTTP-503 harness confirms all 25 read/write helper failure paths reject, and the running UI still cannot be authenticated because the backend cannot reach the normal configured Supabase endpoint (P1001). No QA database was used and no DB records were changed.
+
+### A4. [DONE] Admin order screens call staff-only API routes — High
 
 **Observed in code review:** The Admin portal exposes New Orders and Order Status, but `src/order/order.controller.ts` applies only `StaffJwtAuthGuard` and `PermissionsGuard`. The frontend sends the signed-in user’s Admin JWT, which is not a staff JWT. Admin requests to `/order` and order status updates will therefore be rejected even when the Admin UI grants access. The order fallback removal from the earlier fix now makes the request failure visible instead of showing fabricated order data.
 
 **Verification limit:** Not exercised over HTTP because the backend failed at startup. Controller guard metadata and frontend token handling were inspected.
+
+**Resolved:** Order routes now use the combined Admin-or-Staff authentication guard. Existing `orders_view` and `orders_change` checks remain in place for staff, while the permissions guard’s existing Admin bypass allows Admin JWTs through. Registered the guard dependencies in `OrderModule`. Backend build passes; three focused tests pass for route guard/permission metadata, Admin permission bypass, and module dependency injection. End-to-end HTTP verification remains blocked by normal Supabase connectivity (P1001); no QA database or records were used.
 
 ### A5. [OPEN] Admin supplier screens call staff-only API routes — High
 
