@@ -3,12 +3,12 @@ import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
-import { StaffJwtAuthGuard } from '../staff-auth/guards/staff-auth.guard';
+import { AdminOrStaffAuthGuard } from '../staff-auth/guards/admin-or-staff-auth.guard';
 import { PermissionsGuard } from '../staff-auth/guards/permissions.guard';
 import { RequirePermissions } from '../staff-auth/decorators/permissions.decorator';
 
 @Controller('order')
-@UseGuards(StaffJwtAuthGuard, PermissionsGuard)
+@UseGuards(AdminOrStaffAuthGuard, PermissionsGuard)
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
