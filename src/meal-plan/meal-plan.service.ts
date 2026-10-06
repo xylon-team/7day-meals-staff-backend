@@ -187,7 +187,7 @@ export class MealPlanService {
           },
         },
       });
-    });
+    }, { timeout: 15000 });
   }
 
   async deactivate(id: number) {
