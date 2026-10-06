@@ -36,6 +36,7 @@
 
 21. **Customer order counts displayed as zero.** Added the related-order count to the customer directory API response and taught the frontend mapper to read Prisma's `_count.orders`. Verified against the live API (19 customers, 34 orders, 11 customers with orders) and the staff UI, where nonzero counts appeared and matched the returned counts.
 22. **Customer activation appeared successful without saving.** Added a validated `is_active` update and persisted it through Prisma. The unimplemented customer create/delete routes now return HTTP 501 instead of success-looking placeholder strings. Focused customer-service tests (17) and backend build passed. Manually activated the synthetic test customer in the staff UI, reloaded to verify it stayed active, then deactivated it; a final API read confirmed its original inactive state was restored.
+23. **Admin profile exposed unsupported edit/password controls.** Since the Admin identity is fixed, hid profile editing and password-change controls for Admin while retaining them for Staff, and changed the Admin page copy to say its details are read-only. Frontend TypeScript passes; manual browser verification showed neither control on the Admin profile page.
 
 ## Verification notes
 
