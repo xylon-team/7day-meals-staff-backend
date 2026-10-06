@@ -53,3 +53,45 @@ describe('StatService inventory dashboard summary', () => {
     });
   });
 });
+
+describe('StatService admin dashboard stats', () => {
+  const prisma = {
+    staff: { count: jest.fn().mockResolvedValue(4) },
+    customer: { count: jest.fn().mockResolvedValue(19) },
+    customer_order: { count: jest.fn().mockResolvedValue(6) },
+    $queryRaw: jest.fn(),
+  };
+  const service = new StatService(prisma as unknown as PrismaService);
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    prisma.staff.count.mockResolvedValue(4);
+    prisma.customer.count.mockResolvedValue(19);
+    prisma.customer_order.count.mockResolvedValue(6);
+    prisma.$queryRaw
+      .mockResolvedValueOnce([{ day_name: 'Monday   ', count: 2n }])
+      .mockResolvedValueOnce([{ category: 'vegetarian', count: 3n }])
+      .mockResolvedValueOnce([{ total: 1200n }]);
+  });
+
+  it('returns dashboard metrics while starting independent database reads concurrently', async () => {
+    const resultPromise = service.getAdminDashboardStats();
+
+    expect(prisma.staff.count).toHaveBeenCalledTimes(1);
+    expect(prisma.customer.count).toHaveBeenCalledTimes(1);
+    expect(prisma.customer_order.count).toHaveBeenCalledTimes(1);
+    expect(prisma.$queryRaw).toHaveBeenCalledTimes(3);
+
+    await expect(resultPromise).resolves.toEqual(
+      expect.objectContaining({
+        total_staff: 4,
+        total_customers: 19,
+        active_orders: 6,
+        weekly_orders: expect.objectContaining({ Monday: 2 }),
+        orders_by_categories: { vegetarian: 3 },
+        revenue_today: 1200,
+        errors: [],
+      }),
+    );
+  });
+});

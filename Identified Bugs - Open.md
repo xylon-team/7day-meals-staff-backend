@@ -15,11 +15,11 @@ The live Users/Roles, Meal Plans, Suppliers, and Orders screens include Selenium
 
 ## Needs profiling / confirmation
 
-### 2. Slow API reads cause long loading states — Medium candidate
+### 2. Meal/order list reads remain slow — Medium candidate
 
-One live timing pass observed approximately 2.8–5.6 seconds for ordinary list reads (`/customer`, `/order`, `/food-items`, `/meal-plan`, `/suppliers`) and 6.6–10.1 seconds for dashboard statistics. The browser pass also showed longer waits on the New Orders and Order Status screens. These are real user-visible delays, but a single local timing pass cannot establish whether the cause is query shape, remote database latency, or transient network conditions.
+Repeated local calls observed `/order` at about 2.8 seconds and `/meal-plan` at 4.3–5.5 seconds; one pass measured other list reads between 2.8–4.3 seconds. The browser pass also showed longer waits on New Orders and Order Status. The separate Admin dashboard-stat delay was improved by parallelizing its independent reads. The remaining list delays are real, but timing alone does not distinguish query shape from remote database latency or transient network conditions.
 
-**Next audit step:** Repeat timings over several runs, separate backend/database latency from frontend loading, then inspect the slowest query before choosing a minimal fix.
+**Next audit step:** Profile the slowest list endpoints and their Prisma queries before choosing a minimal fix.
 
 ### 3. Meal-plan and supplier lists contain apparent incomplete/test data — Low candidate
 
