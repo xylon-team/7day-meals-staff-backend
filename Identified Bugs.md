@@ -119,11 +119,13 @@ The API guards prevented successful protected reads in these cases, but the fron
 
 **Resolved:** Removed the nonfunctional Catering Manager and Inventory Manager demo buttons and their hardcoded credential values. The login page now tells staff to use credentials provided by their administrator; the regular email/password login remains available. Verified the demo labels and credential literals are absent while the normal login flow remains, and passed frontend TypeScript and focused ESLint checks. A live database login remains unavailable because the backend currently fails during startup while resolving `AdminOrStaffAuthGuard` in `StatModule`.
 
-### 8. Staff creation rejects legitimate multi-part names — Medium
+### 8. [DONE] Staff creation rejects legitimate multi-part names — Medium
 
 **Reproduction:** In the admin staff creation form, enter a first or last name containing a space (for example, a two-word given name or surname).
 
 **Observed:** The form rejects it with “must contain only letters.” Its validation accepts only ASCII letters, so names containing spaces, hyphens, apostrophes, or accented characters cannot be entered. No staff record was created from the invalid attempt.
+
+**Resolved:** Replaced the ASCII-only name check with shared Unicode-aware validation for staff first and last names. It accepts multi-part names, apostrophes, hyphens, accented letters, and combining marks while rejecting empty names, digits, underscores, and malformed separators. Updated the inline validation message. Test cases passed for valid and invalid examples, and TypeScript plus ESLint on the validator passed. ESLint on the full users page still reports existing hook-order, unused variable, and other unrelated lint issues.
 
 ### 9. Password recovery reveals whether a staff email exists — Medium security risk
 
