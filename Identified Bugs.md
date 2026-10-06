@@ -6,13 +6,15 @@
 
 ## Bugs found
 
-### 1. Sidebar entries lead to missing pages — High
+### 1. [DONE] Sidebar entries lead to missing pages — High
 
 **Affected links:** Promotions (`/promotions`), Inventory (`/inventory`), Supply Requests (`/supply-requests`), Staff Members (`/staff`), Salary Management (`/salary`), Reports (`/reports`), and Logs (`/logs`).
 
 **Reproduction:** Log in as admin and select any affected sidebar link.
 
 **Observed:** Each link navigates to its URL and displays the Next.js “404 — This page could not be found” page. These modules are presented as available in the admin navigation but cannot be used.
+
+**Resolved:** Removed sidebar entries for modules with no implemented page, and removed the dashboard’s “Create Request” action that navigated to the missing Supply Requests page. Existing Staff, Suppliers, and stock summary access remains through the implemented Users, Suppliers, and Dashboard pages. Verified that all 10 remaining sidebar destinations resolve to an app or pages route and that no links/actions remain for the seven missing destinations. Frontend TypeScript passes. ESLint still reports pre-existing hook/state and explicit `any` issues in Layout and Dashboard.
 
 ### 2. Orders pages fail to load backend data and silently show sample orders — High
 
