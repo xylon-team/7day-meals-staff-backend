@@ -103,11 +103,13 @@ The API guards prevented successful protected reads in these cases, but the fron
 
 **Resolved:** Staff login now loads `/staff-auth/me` using the newly issued staff token and displays the name and all assigned role labels from that profile. The display role is stored separately from the authorization role so a staff-assigned label cannot grant admin UI access. Verified the authenticated profile request and response mapping (including multiple roles and HTTP errors), verified the store updates the identity while retaining `Staff` authorization, and passed frontend TypeScript and focused ESLint checks. A live browser/database login could not be completed because the backend currently fails during startup while resolving `AdminOrStaffAuthGuard` in `StatModule`.
 
-### 6. “Remember me” does not control session persistence — Medium
+### 6. [DONE] “Remember me” does not control session persistence — Medium
 
 **Reproduction:** Sign in with the checkbox left unchecked, then reload the page.
 
 **Observed:** The staff session remained active. The UI presents a Remember me checkbox, but session state is persisted in local storage independently of it.
+
+**Resolved:** The staff login checkbox now selects the persistence store: unchecked sessions use `sessionStorage` and end with the browser tab session, while checked sessions use `localStorage` and survive browser restarts. Changing the choice clears the old copy before persisting the new session. Verified the unchecked and checked paths, simulated store rehydration after reload for both, and confirmed Admin login retains its existing persistent behavior. Frontend TypeScript and focused ESLint checks passed. A live browser/database login remains unavailable because the backend currently fails during startup while resolving `AdminOrStaffAuthGuard` in `StatModule`.
 
 ### 7. Demo staff login buttons do not authenticate against the normal configured database — Medium
 
